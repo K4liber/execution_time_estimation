@@ -1,14 +1,15 @@
 from typing import Tuple, Union
-from os.path import isfile
+from os.path import isfile, getsize
 import mimetypes
 
 import cv2
 from cv2.cv2 import VideoCapture
 
-from project.data.interface import DataInterface
+from project.datas.details import DataDetails
+from project.datas.interface.holder import HolderInterface
 
 
-class VideoData(DataInterface):
+class Holder(HolderInterface):
     def __init__(self, data_dir: str) -> None:
         """Load data from given directory."""
         super().__init__(data_dir)
@@ -21,3 +22,16 @@ class VideoData(DataInterface):
             return None, ValueError(f'"{self._data_dir}" is not a video')
 
         return cv2.VideoCapture(self._data_dir), None
+
+    def get_details(self) -> DataDetails:
+        video_size = 0
+
+        if isfile(self._data_dir):
+            video_size = getsize(self._data_dir)
+
+        return DataDetails(
+            overall_size=video_size,
+            parts=1,
+            element_avg_size=video_size,
+            element_max_size=video_size,
+        )

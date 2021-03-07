@@ -1,0 +1,27 @@
+FROM ubuntu:20.04
+RUN apt update
+RUN yes | apt install python3.9 python3-pip
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN ln -s /usr/bin/python3.9 /usr/bin/python
+RUN python -m pip install --upgrade pip
+ARG app_name
+COPY project/apps/$app_name/packages.txt packages.txt
+RUN apt-get update
+RUN DEBIAN_FRONTEND="noninteractive" xargs -a packages.txt apt-get install -y
+COPY project/apps/$app_name/requirements.txt requirements.txt
+RUN python -m pip install -r requirements.txt
+WORKDIR app
+COPY project/__init__.py project/__init__.py
+COPY project/definitions.py project/definitions.py
+COPY project/utils project/utils
+COPY project/apps/__init__.py project/apps/__init__.py
+COPY project/apps/main.py project/apps/main.py
+COPY project/apps/interface project/apps/interface
+COPY project/apps/$app_name project/apps/app
+COPY project/datas/__init__.py project/datas/__init__.py
+COPY project/datas/details.py project/datas/details.py
+COPY project/datas/interface project/datas/interface
+COPY project/datas/$app_name project/datas/data
+ENV app_name ${app_name}
+ENV cpus 1.0
+CMD python project/apps/main.py --app_name $app_name --cpus $cpus
