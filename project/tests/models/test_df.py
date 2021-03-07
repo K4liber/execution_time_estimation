@@ -2,8 +2,7 @@ from os.path import join
 from unittest import TestCase
 
 from project.definitions import ROOT_DIR
-from project.models.data import get_data_frame
-from project.utils.logger import logger
+from project.models.data import get_data_frame, DataFrameColumns
 
 
 class TestDataFrame(TestCase):
@@ -11,4 +10,13 @@ class TestDataFrame(TestCase):
         results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
         df, df_err = get_data_frame(results_filepath)
         self.assertEqual(df_err, None, f'get_data_frame err: {str(df_err)}')
-        logger.info(df)
+
+    def test_get_data_frame_for_specific_app(self):
+        app_id = 1
+        results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
+        df, df_err = get_data_frame(results_filepath, app_id)
+        self.assertEqual(df_err, None, f'get_data_frame err: {str(df_err)}')
+
+        for index, row in df.iterrows():
+            self.assertEqual(row[DataFrameColumns.APP_ID], app_id,
+                             f'{DataFrameColumns.APP_ID} should be eqaul {app_id}')
