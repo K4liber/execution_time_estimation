@@ -6,13 +6,13 @@ from unittest import TestCase
 
 import cv2
 
-from project.data.video import VideoData
+from project.datas.video_splitter.holder import Holder
 from project.definitions import ROOT_DIR
 
 
 class TestVideoData(TestCase):
     def test_splitting_into_images(self):
-        video_data = VideoData(join(ROOT_DIR, 'apps/video_splitter/datasets/01/people_10s_60fps.mp4'))
+        video_data = Holder(join(ROOT_DIR, 'datas/video_splitter/sets/people_10s_60fps.mp4'))
         video, get_err = video_data.get()
         self.assertEqual(get_err, None, 'get video data error')
         success, image = video.read()
