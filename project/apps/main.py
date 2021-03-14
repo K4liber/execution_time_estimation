@@ -29,7 +29,7 @@ if __name__ == "__main__":
             data_details = data_holder.get_details()
             logger.info(data_details)
             app_execution = Execution(data_holder)
-            execution_time, execution_err = app_execution.run()
+            execution_time, execution_err = app_execution.run(args.cpus)
 
             if execution_err is not None:
                 logger.error(execution_err)

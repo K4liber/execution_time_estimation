@@ -26,7 +26,7 @@ class ExecutionInterface(metaclass=abc.ABCMeta):
         return self._data
 
     @abc.abstractmethod
-    def run(self) -> Tuple[timedelta, Union[ValueError, None]]:
+    def run(self, cpus: float) -> Tuple[timedelta, Union[ValueError, None]]:
         """Execute the application. Returns the execution time and the execution error if there is any."""
         pass
 

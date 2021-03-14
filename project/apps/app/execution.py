@@ -10,7 +10,7 @@ class Execution(ExecutionInterface):
     def id(cls) -> int:
         pass
 
-    def run(self) -> Tuple[timedelta, Union[ValueError, None]]:
+    def run(self, cpus: float) -> Tuple[timedelta, Union[ValueError, None]]:
         pass
 
     def __init__(self, data: HolderInterface):
