@@ -2,6 +2,8 @@ from os.path import isfile
 from typing import Union, Tuple
 
 import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
 
 
 class DataFrameColumns:
@@ -31,8 +33,18 @@ def get_data_frame(results_filepath: str, app_id: Union[int, None] = None) -> Tu
         ])
 
         if app_id is not None:
-            df = df.loc[df[DataFrameColumns.APP_ID] == app_id]
+            app_df = df.loc[df[DataFrameColumns.APP_ID] == app_id]
+            df = app_df.loc[:, df.columns != DataFrameColumns.APP_ID]
 
         return df, None
     except BaseException as exception:
         return None, ValueError(exception)
+
+
+def get_training_test_split(df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray, np.ndarray,
+                                                       np.ndarray, np.ndarray, np.ndarray]:
+    x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
+    y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
+    x_train, x_test, y_train, y_test = train_test_split(x, y,
+                                                        test_size=0.33, random_state=42)
+    return x, y, x_train, x_test, y_train, y_test

@@ -9,4 +9,13 @@ Project for the classes 'Statistic under AI and its application to engineering s
 2. Run image:
     ```
    sudo docker run --mount type=bind,source="$(pwd)"/execution_results,target=/app/project/execution_results --cpus=1.1 -e cpus=1.1 app_execute
-   ```
+   ```  
+
+or just run the bash script to automatically generate date for an application using different resources limits:
+```
+bash app_executions.sh video_splitter
+```
+### Visualize the modeling results
+```
+python project/models/main.py
+```
