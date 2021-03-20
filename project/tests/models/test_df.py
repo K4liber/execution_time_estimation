@@ -16,7 +16,4 @@ class TestDataFrame(TestCase):
         results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
         df, df_err = get_data_frame(results_filepath, app_id)
         self.assertEqual(df_err, None, f'get_data_frame err: {str(df_err)}')
-
-        for index, row in df.iterrows():
-            self.assertEqual(row[DataFrameColumns.APP_ID], app_id,
-                             f'{DataFrameColumns.APP_ID} should be eqaul {app_id}')
+        self.assertEqual(len(df), 21)
