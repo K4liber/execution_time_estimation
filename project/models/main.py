@@ -1,3 +1,4 @@
+import argparse
 from os.path import join
 import sys
 
@@ -6,18 +7,29 @@ from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.svm import SVR
-import numpy as np
 
 sys.path.append('.')
 
+from project.utils.app_ids import app_name_to_id
+from project.utils.logger import logger
 from project.definitions import ROOT_DIR
 from project.models.data import (
     get_data_frame,
     get_training_test_split, DataFrameColumns,
 )
 
+parser = argparse.ArgumentParser(description='Model training and tests.')
+parser.add_argument('--app_name', required=True, type=str, help='app name')
+
+
 if __name__ == "__main__":
-    app_id = 1
+    args = parser.parse_args()
+    logger.info(args)
+    app_id = app_name_to_id.get(args.app_name, None)
+
+    if app_id is None:
+        raise ValueError(f'missing app "{args.app_name}" from app map={str(app_name_to_id)}')
+
     results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
     df, df_err = get_data_frame(results_filepath, app_id)
 

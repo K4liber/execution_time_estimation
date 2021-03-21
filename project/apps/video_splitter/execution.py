@@ -6,6 +6,7 @@ from cv2 import imwrite
 
 from project.apps.interface.execution import ExecutionInterface
 from project.datas.data.holder import Holder
+from project.utils.app_ids import AppID
 from project.utils.logger import logger
 
 
@@ -14,8 +15,6 @@ class Execution(ExecutionInterface):
         super().__init__(data)
 
     def run(self, cpus: float) -> Tuple[timedelta, Union[ValueError, None]]:
-        # TODO make it work in multiprocessing mode
-        # USE IT: https://stackoverflow.com/questions/27015792/how-to-get-frames-from-video-in-parallel-using-cv2-multiprocessing-in-python
         start = datetime.now()
 
         try:
@@ -44,4 +43,4 @@ class Execution(ExecutionInterface):
 
     @classmethod
     def id(cls):
-        return 1
+        return AppID.VideoSplitter
