@@ -1,5 +1,6 @@
 import argparse
 from os.path import join
+from os import getenv
 import sys
 
 from sklearn.model_selection import GridSearchCV
@@ -7,6 +8,7 @@ from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.svm import SVR
+import numpy as np
 
 sys.path.append('.')
 
@@ -60,11 +62,12 @@ if __name__ == "__main__":
     # ML
     svr = GridSearchCV(SVR(kernel='rbf'),
                        param_grid={
-                           "gamma": [0.1],
-                           "epsilon": [0.001],
-                           "C": [300],
+                           "gamma": [0.01, 0.05, 0.1, 0.5],
+                           "epsilon": [0.0001, 0.0005, 0.001, 0.005],
+                           "C": [0.1, 1, 10, 100, 300],
                        })
-    svr.fit(x_train_scaled, y_train_scaled)
+    print('yolo')
+    svr.fit(x_train_scaled, np.ravel(y_train_scaled))
     z_svr = svr.predict(x_scaled)
     z_svr_test = svr.predict(x_test_scaled)
     z_svr_test_inverse = scale_y.inverse_transform(z_svr_test)
@@ -77,18 +80,20 @@ if __name__ == "__main__":
 
     for index, z_pred in enumerate(z_svr_test_inverse):
         z_pred = z_pred if z_pred > 0 else min(y_train_list)
-        print('pred: %s' % z_pred)
         z_origin = y_test_list[index]
-        print('origin: %s' % z_origin)
         error = abs(z_pred - z_origin)
         errors.append(error)
-        print('error [s] = %s' % error)
         error_rel = error * 100.0 / z_origin
         errors_rel.append(error_rel)
-        print('error relative [percentage] = %s' % error_rel)
 
-    print('###############SUMMARY##################')
-    print('training set length: %s' % len(y_test_list))
+        if getenv("DEBUG") == "true":
+            print('pred: %s' % z_pred)
+            print('origin: %s' % z_origin)
+            print('error [s] = %s' % error)
+            print('error relative [percentage] = %s' % error_rel)
+
+    print('############### SUMMARY ##################')
+    print('test set length: %s' % len(y_test_list))
     print('avg time [s] = %s' % str(sum(y_test_list) / len(y_test_list)))
     print('avg error [s] = %s' % str(sum(errors) / len(errors)))
     print('avg error relative [percentage] = %s' % str(sum(errors_rel) / len(errors_rel)))
@@ -97,8 +102,7 @@ if __name__ == "__main__":
     y_plot = x[DataFrameColumns.CPUS].to_numpy()
     ax.plot_trisurf(x_plot, y_plot, z_svr_inverse, alpha=0.5)
     # ML end
-    plt.margins(tight=False)
+    plt.margins()
     plt.gcf().autofmt_xdate()
     ax.legend()
     plt.show()
-

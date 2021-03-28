@@ -35,13 +35,19 @@ class Holder(HolderInterface):
 
     def get_details(self) -> DataDetails:
         data_frame_size = 0
+        parts = 1,
 
         if isfile(self._data_dir):
             data_frame_size = getsize(self._data_dir)
 
+        data, get_err = self.get()
+
+        if get_err is None:
+            parts = len(data[0].columns)
+
         return DataDetails(
             overall_size=data_frame_size,
-            parts=1,
-            element_avg_size=data_frame_size,
-            element_max_size=data_frame_size,
+            parts=parts,
+            element_avg_size=int(data_frame_size/parts),
+            element_max_size=int(data_frame_size/parts),
         )

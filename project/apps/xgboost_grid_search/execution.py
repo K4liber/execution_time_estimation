@@ -28,6 +28,16 @@ class Execution(ExecutionInterface):
 
             y = data[1]
             x = data[0]
+
+            from sklearn import preprocessing
+            lbl = preprocessing.LabelEncoder()
+
+            for col_name in x:
+                x_col = x[col_name]
+
+                if x_col.dtype == 'object':
+                    x[col_name] = lbl.fit_transform(x[col_name].astype(str))
+
             # A parameter grid for XGBoost
             params = {
                 'min_child_weight': [1, 5, 10],
@@ -37,7 +47,7 @@ class Execution(ExecutionInterface):
                 'max_depth': [3, 4, 5]
             }
             xgb = XGBClassifier(learning_rate=0.02, n_estimators=600, objective='binary:logistic',
-                                silent=True, nthread=1)
+                                silent=True, nthread=1, eval_metric='error')
             folds = 3
             param_comb = 5
             skf = StratifiedKFold(n_splits=folds, shuffle=True, random_state=1001)
