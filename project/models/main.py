@@ -68,7 +68,8 @@ if __name__ == "__main__":
     z_svr = svr.predict(x_scaled)
     z_svr_test = svr.predict(x_test_scaled)
     z_svr_test_inverse = scale_y.inverse_transform(z_svr_test)
-    ax.scatter(x_plot_test, y_plot_test, z_svr_test_inverse, label='test points', c='#cc0000', alpha=1)
+    z_plot_test = y_test[DataFrameColumns.EXECUTION_TIME]
+    ax.scatter(x_plot_test, y_plot_test, z_plot_test, label='test points', c='#cc0000', alpha=1)
     y_test_list = list(y_test[DataFrameColumns.EXECUTION_TIME])
     y_train_list = list(y_train)
     errors_rel = []
