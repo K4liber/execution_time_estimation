@@ -5,21 +5,16 @@ from typing import Tuple, Union, List
 from datetime import datetime, timedelta
 
 import face_recognition
-import matplotlib
 from matplotlib import pyplot, patches
 import numpy as np
 from PIL import Image
 
 from project.apps.interface.execution import ExecutionInterface
+from project.apps.utils import split_list
 from project.datas.data.holder import Holder
 from project.definitions import ROOT_DIR
 from project.utils.app_ids import AppID
 from project.utils.logger import logger
-
-
-def split_list(a, n):
-    k, m = divmod(len(a), n)
-    return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
 
 
 def process(file_paths: List[str]) -> str:
@@ -30,8 +25,6 @@ def process(file_paths: List[str]) -> str:
         faced_file_path = join(ROOT_DIR, 'execution_results', 'app_output', file_name)
         # Mark faces and save the image
         image = np.array(Image.open(file_path))
-        #im = Image.fromarray(image)
-        #im.save(file_path)
         height: int = image.shape[0]
         width: int = image.shape[1]
         dpi: int = 100
@@ -43,8 +36,6 @@ def process(file_paths: List[str]) -> str:
         figure.add_axes(ax)
         ax.imshow(image)
         logger.info('adding ' + str(len(faces_coords)) + ' faces to image "' + file_name + '"')
-        #fig = pyplot.gcf()
-        #fig.savefig(fname=file_path, dpi=dpi, bbox_inches='tight')
 
         for index in range(len(faces_coords)):
             x_start = faces_coords[index][3]

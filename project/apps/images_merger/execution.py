@@ -37,9 +37,8 @@ class Execution(ExecutionInterface):
 
             logger.info(f'saving movie from {str(len(image_paths))} images with fps = {str(fps)}')
             clip = moviepy.video.io.ImageSequenceClip.ImageSequenceClip(image_paths, fps=fps)
-            output_file_path = join(ROOT_DIR, 'execution_results', 'app_output', 'video.mp4')
+            output_file_path = join(ROOT_DIR, 'execution_results', 'app_output', f'video.mp4')
             clip.write_videofile(output_file_path)
-
             return datetime.now() - start, None
         except BaseException as exception:
             return datetime.now() - start, ValueError(exception)

@@ -16,6 +16,7 @@ COPY project/definitions.py project/definitions.py
 COPY project/utils project/utils
 COPY project/apps/__init__.py project/apps/__init__.py
 COPY project/apps/main.py project/apps/main.py
+COPY project/apps/utils.py project/apps/utils.py
 COPY project/apps/interface project/apps/interface
 COPY project/apps/$app_name project/apps/app
 COPY project/datas/__init__.py project/datas/__init__.py
