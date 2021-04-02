@@ -16,6 +16,15 @@ class DataFrameColumns:
     EXECUTION_TIME = 'execution_time'
 
 
+FEATURE_NAMES = [
+    DataFrameColumns.CPUS,
+    DataFrameColumns.OVERALL_SIZE,
+    DataFrameColumns.PARTS,
+    DataFrameColumns.ELEMENT_AVG_SIZE,
+    DataFrameColumns.ELEMENT_MAX_SIZE,
+]
+
+
 def get_data_frame(results_filepath: str, app_id: Union[int, None] = None) -> Tuple[Union[None, pd.DataFrame],
                                                                                     Union[None, ValueError]]:
     if not isfile(results_filepath):
