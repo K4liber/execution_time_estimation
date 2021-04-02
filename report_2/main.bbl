@@ -1,0 +1,57 @@
+\begin{thebibliography}{10}
+
+\bibitem{baltic_lsc_website}
+FILL IT,
+\newblock {\em BalticLSC: main webpage of the project},
+\newblock FILL IT, 14.03.2021.
+
+\bibitem{baltic_lsc}
+FILL IT,
+\newblock {\em BalticLSC: BalticLSC Admin Tool Technical Documentation, Design
+  of the Computation Application Language, Design of the BalticLSC Computation
+  Tool \\\texttt{https://www.balticlsc.eu/wp-content/uploads \newline
+  /2020/03/O5.2A\_O5.3A\_O5.4ABalticLSC\_Software\_Design.pdf}},
+\newblock FILL IT, 14.03.2021.
+
+\bibitem{wcet}
+FILL IT,
+\newblock {\em Estimation of the execution time in real-time systems},
+\newblock FILL IT, 22.01.2016.
+
+\bibitem{LaTeX}
+Leslie Lamport,
+\newblock {\em A Document Preparation System: \LaTeX, User's Guide and
+  Reference Manual},
+\newblock Addison Wesley Publishing Company, 1986.
+
+\bibitem{LaTeXD}
+Helmut Kopka,
+\newblock {\em \LaTeX, eine Einführung},
+\newblock Addison-Wesley, 1989.
+
+\bibitem{TeX}
+D.K. Knuth,
+\newblock {\em The {\rm T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}book},
+\newblock Addison-Wesley, 1989.
+
+\bibitem{METAFONT}
+D.E. Knuth,
+\newblock {\em The {\rm METAFONT} book},
+\newblock Addison Wesley Publishing Company, 1986.
+
+\bibitem{rbf_kernel}
+Wikipedia,
+\newblock {\em Radial basis function kernel},
+\newblock Wikipedia, 03.03.2021.
+
+\bibitem{svm}
+Vladimir Vapnik,
+\newblock {\em Support-Vector Networks by Corinna Cortes},
+\newblock FILL IT, 1995.
+
+\bibitem{svrc}
+Dr.~Saed Sayad,
+\newblock {\em Support Vector Regression},
+\newblock FILL IT, 17.01.2021.
+
+\end{thebibliography}
