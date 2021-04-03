@@ -23,6 +23,39 @@ from project.models.data import (
 parser = argparse.ArgumentParser(description='Model training and tests.')
 parser.add_argument('--app_name', required=True, type=str, help='app name')
 
+USE_SCALE = True
+scale_x = None
+scale_y = None
+
+
+def init_scale(x: any, y: any):
+    global scale_x
+    global scale_y
+    scale_x = StandardScaler().fit(x)
+    scale_y = StandardScaler().fit(y)
+
+
+def transform_x(x: any) -> any:
+    if USE_SCALE:
+        return scale_x.transform(x)
+    else:
+        return x
+
+
+def transform_y(y: any) -> any:
+    if USE_SCALE:
+        return scale_y.transform(y)
+    else:
+        return y
+
+
+def inverse_transform_y(y: any) -> any:
+    if USE_SCALE:
+        return scale_y.inverse_transform(y)
+    else:
+        return y
+
+
 if __name__ == "__main__":
     args = parser.parse_args()
     logger.info(args)
@@ -37,13 +70,16 @@ if __name__ == "__main__":
     if df_err is not None:
         raise ValueError(f'data frame load err: {str(df_err)}')
 
-    x, y, x_train, x_test, y_train, y_test = get_training_test_split(df)
-    scale_x = StandardScaler().fit(x)
-    scale_y = StandardScaler().fit(y)
-    x_test_scaled = scale_x.transform(x_test)
-    x_scaled = scale_x.transform(x)
-    x_train_scaled = scale_x.transform(x_train)
-    y_train_scaled = scale_y.transform(y_train)
+    x, y, x_train, x_test, y_train, y_test = get_training_test_split(
+        df, [DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE])
+
+    if USE_SCALE:
+        init_scale(x, y)
+
+    x_test_scaled = transform_x(x_test)
+    x_scaled = transform_x(x)
+    x_train_scaled = transform_x(x_train)
+    y_train_scaled = transform_y(y_train)
     scaled_x_train_df = pd.DataFrame(x_train_scaled, columns=x.columns)
     scaled_y_train_df = pd.DataFrame(y_train_scaled, columns=y.columns)
     x_plot_train = x_train[DataFrameColumns.OVERALL_SIZE]
@@ -60,9 +96,9 @@ if __name__ == "__main__":
     ax.scatter(x_plot_train, y_plot_train, z_plot_train, c='#2ca02c', alpha=1, label='training points')
     ax.scatter(x_plot_test, y_plot_test, z_plot_test, label='test points', c='#cc0000', alpha=1)
     # ML
-    gamma_min = 0.0001
-    epsilon_min = 0.0001
-    C_min = 1.0
+    gamma_min = 0.001
+    epsilon_min = 0.00001
+    C_min = 10.0
     model = GridSearchCV(SVR(kernel='rbf'),
                          param_grid={
                              "gamma": [gamma_min * 2 ** x for x in range(11)],
@@ -74,11 +110,11 @@ if __name__ == "__main__":
     logger.info(model.best_params_)
     z_svr = model.predict(x_scaled)
     z_svr_test = model.predict(x_test_scaled)
-    z_svr_test_inverse = scale_y.inverse_transform(z_svr_test)
+    z_svr_test_inverse = inverse_transform_y(z_svr_test)
     y_test_list = list(y_test[DataFrameColumns.EXECUTION_TIME])
+    y_train_list = list(y_train[DataFrameColumns.EXECUTION_TIME])
     errors_rel = []
     errors = []
-    y_train_list = list(y_train[DataFrameColumns.EXECUTION_TIME])
 
     for index, z_pred in enumerate(z_svr_test_inverse):
         z_pred = z_pred if z_pred > 0 else min(y_train_list)
@@ -100,7 +136,7 @@ if __name__ == "__main__":
     print('avg error [s] = %s' % str(sum(errors) / len(errors)))
     print('avg error relative [percentage] = %s' % str(sum(errors_rel) / len(errors_rel)))
     # Plot prediction surface
-    z_svr_inverse = scale_y.inverse_transform(z_svr)
+    z_svr_inverse = inverse_transform_y(z_svr)
     x_plot = x[DataFrameColumns.OVERALL_SIZE].to_numpy()
     y_plot = x[DataFrameColumns.CPUS].to_numpy()
     ax.plot_trisurf(x_plot, y_plot, z_svr_inverse, alpha=0.5)

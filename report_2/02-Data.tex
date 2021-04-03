@@ -1,5 +1,5 @@
 %!TEX root = main.tex
-\section{Introduction}
+\section{Data}
 
 To predict time of module execution we create a machine learning model for each module. With each execution of the module, within some application, we will get another data point to train our model. We will use the following features (explanatory variables)\footnote{As a docker container that will be used to execute a module do not use SWAP memory, RAM is not colerated with execution time. In this program we will not use modules with GPU support. Summarazing, the GPUs and RAM resources limits are not taken into account for modeling.} as an input data for the model:
 \begin{enumerate}

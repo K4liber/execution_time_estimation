@@ -1,5 +1,5 @@
 from os.path import isfile
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 import pandas as pd
 import numpy as np
@@ -50,9 +50,13 @@ def get_data_frame(results_filepath: str, app_id: Union[int, None] = None) -> Tu
         return None, ValueError(exception)
 
 
-def get_training_test_split(df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray, np.ndarray,
-                                                       np.ndarray, np.ndarray, np.ndarray]:
-    x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
+def get_training_test_split(df: pd.DataFrame, columns: Union[List[str], None] = None) \
+        -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    if columns is None:
+        x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
+    else:
+        x = df[columns]
+
     y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
     x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                         test_size=0.33, random_state=42)
