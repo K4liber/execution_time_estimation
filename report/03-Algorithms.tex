@@ -4,7 +4,7 @@
 
 As a one of machine learning algorithms to estimate time of a CAL module execution we will use \textit{Epsilon-Support Vector Regression}\cite{svrc} (SVR) - it is based on Support Vector Machine (SVM, orginally named \textit{support-vector networks}\cite{svm}).
 
-We will use SVR model with a RBF kernel\cite{rbf_kernel} which is the most known flexible kernel and it could project the features vectors into infinite dimensions. It uses Taylor expansion which is equivalent to use an infinite sum over the polynomial kernels. It allows to model any function that is a sum of uknown degree polynomials.
+We will use SVR model with a RBF kernel\cite{rbf_kernel} which is the most known flexible kernel and it could project the features vectors into infinite dimensions. It uses Taylor expansion which is equivalent to use an infinite sum over the polynomial kernels. It allows to model any function that is a sum of unknown degree polynomials.
 
 Using kernel, the resulting algorithm is formally similar, except that every dot product is replaced by a nonlinear kernel function. This allows the algorithm to fit the maximum-margin hyperplane in a transformed feature space. The RBF kernel have the following form:
 
@@ -28,7 +28,7 @@ with the following constraints:
 Figure~\ref{fig:svrc} shows the wanted hyperplane with marked \textit{$\xi$} and \textit{$\epsilon$} parameters.
 As we already choosed the RBF kernel for the SVR algorithm, our modelling is simplified to just find the best values of the following hyperparameters\cite{svr}:
 \begin{enumerate}
-	\item \textit{C} - As we can see, the \textit{C} (which is the weight of an error cost and have to be strictly positive) is the regularization\footnote{Regularization is a way to give a penalty to certain models (usually overly complex ones)} hyperparameer. The example from the figure use l1 penalty (the library that we use to modelling use the squared epsilon-insensitive loss with l2 penalty). The strength of the regularization is inversely proportional to C. The larger value of C the more variance is introduced into the model. 
+	\item \textit{C} -the weight of an error cost. The regularization\footnote{Regularization is a way to give a penalty to certain models (usually overly complex ones)} hyperparameer, have to be strictly positive. The example from the figure use l1 penalty (the library that we use to modelling use the squared epsilon-insensitive loss with l2 penalty). The strength of the regularization is inversely proportional to C. The larger value of C the more variance is introduced into the model. 
 	\item \textit{epsilon} - It specifies the epsilon-tube within which no penalty is associated in the training loss function with points predicted within a distance epsilon from the actual value. As it is shown of the figure~\ref{fig:epsilon} the grey data points do not provide any penalty to the loss function because they are within the allowed epsilon range around the approximation\footnote{\label{figure_example}The figure is based on some example data and it only shows the hyperparameter influence on model.}.
 	\item \textit{gamma} - The \textit{gamma} hyperparameter can be seen as the inverse of the radius of influence of samples selected by the model as support vectors. Increasing the value of \textit{gamma} hyperparameter causes the variance increase what is shown in the figure~\ref{fig:gamma}\footnotemark[\getcountref{figure_example}].
 	

@@ -31,7 +31,7 @@ def get_data_frame(results_filepath: str, app_id: Union[int, None] = None) -> Tu
         return None, ValueError(f'"{results_filepath}" is not a file')
 
     try:
-        df = pd.read_csv(results_filepath, delimiter=',', names=[
+        df = pd.read_csv(results_filepath, delimiter=',', header=0, names=[
             DataFrameColumns.APP_ID,
             DataFrameColumns.CPUS,
             DataFrameColumns.OVERALL_SIZE,

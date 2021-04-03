@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.svm import SVR
 import numpy as np
+from xgboost import XGBRegressor
 
 sys.path.append('.')
 
@@ -20,12 +21,12 @@ from project.models.data import (
     get_training_test_split, DataFrameColumns, FEATURE_NAMES,
 )
 
-parser = argparse.ArgumentParser(description='Model training and tests.')
-parser.add_argument('--app_name', required=True, type=str, help='app name')
-
-USE_SCALE = True
 scale_x = None
 scale_y = None
+parser = argparse.ArgumentParser(description='Model training and validation.')
+parser.add_argument('--app_name', required=True, type=str, help='app name')
+parser.add_argument('--alg', required=True, type=str, help='algorithm')
+parser.add_argument('--scale', action=argparse.BooleanOptionalAction, help='scale the data before learning')
 
 
 def init_scale(x: any, y: any):
@@ -36,24 +37,28 @@ def init_scale(x: any, y: any):
 
 
 def transform_x(x: any) -> any:
-    if USE_SCALE:
+    if scale_x is not None:
         return scale_x.transform(x)
     else:
         return x
 
 
 def transform_y(y: any) -> any:
-    if USE_SCALE:
+    if scale_y is not None:
         return scale_y.transform(y)
     else:
         return y
 
 
 def inverse_transform_y(y: any) -> any:
-    if USE_SCALE:
+    if scale_y is not None:
         return scale_y.inverse_transform(y)
     else:
         return y
+
+
+def grid_search(algorithm, param_grid):
+    return GridSearchCV(algorithm, param_grid=param_grid)
 
 
 if __name__ == "__main__":
@@ -73,7 +78,7 @@ if __name__ == "__main__":
     x, y, x_train, x_test, y_train, y_test = get_training_test_split(
         df, [DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE])
 
-    if USE_SCALE:
+    if args.scale:
         init_scale(x, y)
 
     x_test_scaled = transform_x(x_test)
@@ -96,15 +101,33 @@ if __name__ == "__main__":
     ax.scatter(x_plot_train, y_plot_train, z_plot_train, c='#2ca02c', alpha=1, label='training points')
     ax.scatter(x_plot_test, y_plot_test, z_plot_test, label='test points', c='#cc0000', alpha=1)
     # ML
-    gamma_min = 0.001
-    epsilon_min = 0.00001
-    C_min = 10.0
-    model = GridSearchCV(SVR(kernel='rbf'),
-                         param_grid={
-                             "gamma": [gamma_min * 2 ** x for x in range(11)],
-                             "epsilon": [epsilon_min * 2 ** x for x in range(11)],
-                             "C": [C_min * 2 ** x for x in range(15)],
-                         })
+    if args.alg == 'svr':
+        gamma_min = 0.0001
+        epsilon_min = 0.000001
+        C_min = 1000.0
+        algorithm = SVR(kernel='rbf')
+        param_grid = {
+             "gamma": [gamma_min * 2 ** x for x in range(8)],
+             "epsilon": [epsilon_min * 2 ** x for x in range(11)],
+             "C": [C_min * 2 ** x for x in range(12)],
+         }
+    elif args.alg == 'xgb':
+        algorithm = XGBRegressor()
+        param_grid = {
+            'n_estimators': [5, 10, 20, 40, 100],
+            'max_depth': [1, 2, 3, 4, 5, 6, 7],
+            'eta': [0.01 * 2 ** x for x in range(8)],
+            'subsample': [0.9, 0.6, 0.7, 0.8, 1.0],
+            'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
+        }
+    else:
+        raise ValueError(f'"{args.alg}" algorithm not implemented')
+
+    model = grid_search(
+        algorithm=algorithm,
+        param_grid=param_grid,
+    )
+
     model.fit(x_train_scaled, np.ravel(y_train_scaled))
     logger.info('model best params:')
     logger.info(model.best_params_)

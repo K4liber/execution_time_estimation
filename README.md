@@ -4,6 +4,7 @@ Project for the classes 'Statistic under AI and its application to engineering s
 1. `video_splitter`
 2. `face_recogniser`
 3. `xgboost_grid_search`
+4. `images_merger`
 ### Generate data
 1. Build app execution image:  
     ```
@@ -18,7 +19,7 @@ or just run the bash script to automatically generate date for an application us
 ```
 bash app_executions.sh APP_NAME
 ```
-### Visualize the modeling results
+### Train and validate the model
 ```
-python project/models/main.py --app_name APP_NAME
+python project/models/main.py --app_name APP_NAME --alg svr --scale
 ```
