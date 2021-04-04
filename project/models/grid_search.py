@@ -7,20 +7,18 @@ import sys
 import joblib
 from sklearn.model_selection import GridSearchCV
 from sklearn.preprocessing import StandardScaler
-import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 
 sys.path.append('.')
 
+from project.models.knn.algorithm import AlgKNN
 from project.models.svr.algorithm import AlgSVR
-from project.models.xgb import AlgXGB
+from project.models.xgb.algorithm import AlgXGB
 from project.utils.app_ids import app_name_to_id
 from project.utils.logger import logger
 from project.definitions import ROOT_DIR
 from project.models.data import (
     get_data_frame,
-    get_training_test_split,
     DataFrameColumns,
 )
 
@@ -77,43 +75,29 @@ if __name__ == "__main__":
 
     results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
 
-    for fraction in [1.0 - x/10 for x in range(args.frac)]:
+    for fraction in [round(1.0 - x/10, 1) for x in range(args.frac)]:
         df, df_err = get_data_frame(results_filepath, app_id, fraction)
 
         if df_err is not None:
             raise ValueError(f'data frame load err: {str(df_err)}')
 
-        columns = None
-
         if args.reduced:
-            columns = [DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+            x = df[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+        else:
+            x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
 
-        x, y, x_train, x_test, y_train, y_test = get_training_test_split(df, columns)
+        y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
 
         if args.scale:
             init_scale(x, y)
 
-        x_test_scaled = transform_x(x_test)
         x_scaled = transform_x(x)
-        x_train_scaled = transform_x(x_train)
-        y_train_scaled = transform_y(y_train)
-        scaled_x_train_df = pd.DataFrame(x_train_scaled, columns=x.columns)
-        scaled_y_train_df = pd.DataFrame(y_train_scaled, columns=y.columns)
-        x_plot_train = x_train[DataFrameColumns.OVERALL_SIZE]
-        y_plot_train = x_train[DataFrameColumns.CPUS]
-        z_plot_train = y_train[DataFrameColumns.EXECUTION_TIME]
-        x_plot_test = x_test[DataFrameColumns.OVERALL_SIZE]
-        y_plot_test = x_test[DataFrameColumns.CPUS]
-        z_plot_test = y_test[DataFrameColumns.EXECUTION_TIME]
-        # plot data points
-        ax = plt.axes(projection='3d')
-        ax.set_xlabel('total size [B]')
-        ax.set_ylabel('cpus')
-        ax.set_zlabel('time [s]')
-        ax.scatter(x_plot_train, y_plot_train, z_plot_train, c='#2ca02c', alpha=1, label='training points')
-        ax.scatter(x_plot_test, y_plot_test, z_plot_test, label='test points', c='#cc0000', alpha=1)
+        y_scaled = transform_y(y)
         # ML start
-        if args.alg == 'svr':
+        if args.alg == 'knn':
+            algorithm = AlgKNN.get()
+            param_grid = AlgKNN.get_params_grid()
+        elif args.alg == 'svr':
             algorithm = AlgSVR.get()
             param_grid = AlgSVR.get_params_grid()
         elif args.alg == 'xgb':
@@ -127,51 +111,39 @@ if __name__ == "__main__":
             param_grid=param_grid,
         )
 
-        model.fit(x_train_scaled, np.ravel(y_train_scaled))
-        z_svr = model.predict(x_scaled)
-        z_svr_test = model.predict(x_test_scaled)
+        model.fit(x_scaled, np.ravel(y_scaled))
+        y_predicted_scaled = model.predict(x_scaled)
         # ML end
-        z_svr_test_inverse = inverse_transform_y(z_svr_test)
-        y_test_list = list(y_test[DataFrameColumns.EXECUTION_TIME])
-        y_train_list = list(y_train[DataFrameColumns.EXECUTION_TIME])
+        y_predicted = inverse_transform_y(y_predicted_scaled)
+        y_list = list(y[DataFrameColumns.EXECUTION_TIME])
         errors_rel = []
         errors = []
 
-        for index, z_pred in enumerate(z_svr_test_inverse):
-            z_pred = z_pred if z_pred > 0 else min(y_train_list)
-            z_origin = y_test_list[index]
-            error = abs(z_pred - z_origin)
+        for index, y_pred in enumerate(y_predicted):
+            y_pred = y_pred if y_pred > 0 else min(y_list)
+            y_origin = y_list[index]
+            error = abs(y_pred - y_origin)
             errors.append(error)
-            error_rel = error * 100.0 / z_origin
+            error_rel = error * 100.0 / y_origin
             errors_rel.append(error_rel)
 
             if getenv("DEBUG") == "true":
-                logger.info('pred: %s' % z_pred)
-                logger.info('origin: %s' % z_origin)
+                logger.info('pred: %s' % y_pred)
+                logger.info('origin: %s' % y_origin)
                 logger.info('error [s] = %s' % error)
                 logger.info('error relative [percentage] = %s' % error_rel)
 
         logger.info('############### SUMMARY ##################')
         logger.info('model best params:')
         logger.info(model.best_params_)
-        logger.info('training set length: %s' % len(y_train_list))
-        logger.info('test set length: %s' % len(y_test_list))
-        logger.info('avg time [s] = %s' % str(sum(y_test_list) / len(y_test_list)))
+        logger.info('training set length: %s' % len(y_list))
+        logger.info('avg time [s] = %s' % str(sum(y_list) / len(y_list)))
         logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
         logger.info('avg error relative [percentage] = %s' % str(sum(errors_rel) / len(errors_rel)))
         model_name = f'{args.app_name}_{fraction}'
         model_name = model_name + '_' + ('1' if args.scale else '0')
         model_name = model_name + '_' + ('1' if args.reduced else '0')
         model_path = os.path.join(ROOT_DIR, 'models', args.alg, model_name)
-        joblib.dump(model.best_estimator_, f'{model_path}.pkl', compress=1)
 
-        if getenv("DEBUG") == "true":
-            # Plot prediction surface
-            z_svr_inverse = inverse_transform_y(z_svr)
-            x_plot = x[DataFrameColumns.OVERALL_SIZE].to_numpy()
-            y_plot = x[DataFrameColumns.CPUS].to_numpy()
-            ax.plot_trisurf(x_plot, y_plot, z_svr_inverse, alpha=0.5)
-            plt.margins()
-            plt.gcf().autofmt_xdate()
-            ax.legend()
-            plt.show()
+        with open(f'{model_path}.pkl', "w+b") as model_file:
+            joblib.dump(model.best_estimator_, model_file, compress=1)

@@ -25,10 +25,13 @@ FEATURE_NAMES = [
 ]
 
 
-def get_data_frame(results_filepath: str, app_id: Union[int, None] = None) -> Tuple[Union[None, pd.DataFrame],
-                                                                                    Union[None, ValueError]]:
+def get_data_frame(results_filepath: str, app_id: Union[int, None] = None,
+                   fraction: float = 1.0) -> Tuple[Union[None, pd.DataFrame], Union[None, ValueError]]:
     if not isfile(results_filepath):
         return None, ValueError(f'"{results_filepath}" is not a file')
+
+    if fraction < 0.1 or fraction > 1.0:
+        return None, ValueError(f'"fraction" value should be between 0.1 and 1.0, got = {fraction}')
 
     try:
         df = pd.read_csv(results_filepath, delimiter=',', header=0, names=[
@@ -45,6 +48,7 @@ def get_data_frame(results_filepath: str, app_id: Union[int, None] = None) -> Tu
             app_df = df.loc[df[DataFrameColumns.APP_ID] == app_id]
             df = app_df.loc[:, df.columns != DataFrameColumns.APP_ID]
 
+        df = df.sample(frac=fraction)
         return df, None
     except BaseException as exception:
         return None, ValueError(exception)
