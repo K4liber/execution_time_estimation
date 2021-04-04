@@ -59,5 +59,5 @@ def get_training_test_split(df: pd.DataFrame, columns: Union[List[str], None] = 
 
     y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
     x_train, x_test, y_train, y_test = train_test_split(x, y,
-                                                        test_size=0.33, random_state=42)
+                                                        test_size=0.33, random_state=10)
     return x, y, x_train, x_test, y_train, y_test

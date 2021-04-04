@@ -25,13 +25,25 @@ class Holder(HolderInterface):
 
     def get_details(self) -> DataDetails:
         video_size = 0
+        frames = 1
 
         if isfile(self._data_dir):
             video_size = getsize(self._data_dir)
 
+        video, get_err = self.get()
+
+        if get_err is None:
+            # Find OpenCV version
+            (major_ver, minor_ver, subminor_ver) = cv2.__version__.split('.')
+
+            if int(major_ver) < 3:
+                frames = video.get(cv2.cv.CV_CAP_PROP_FRAME_COUNT)
+            else:
+                frames = video.get(cv2.CAP_PROP_FRAME_COUNT)
+
         return DataDetails(
             overall_size=video_size,
-            parts=1,
-            element_avg_size=video_size,
-            element_max_size=video_size,
+            parts=frames,
+            element_avg_size=int(video_size/frames),
+            element_max_size=int(video_size/frames),
         )

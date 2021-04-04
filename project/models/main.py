@@ -27,6 +27,8 @@ parser = argparse.ArgumentParser(description='Model training and validation.')
 parser.add_argument('--app_name', required=True, type=str, help='app name')
 parser.add_argument('--alg', required=True, type=str, help='algorithm')
 parser.add_argument('--scale', action=argparse.BooleanOptionalAction, help='scale the data before learning')
+parser.add_argument('--reduced', action=argparse.BooleanOptionalAction,
+                    help='use only "CPUs" and "OVERALL_SIZE" features')
 
 
 def init_scale(x: any, y: any):
@@ -75,8 +77,13 @@ if __name__ == "__main__":
     if df_err is not None:
         raise ValueError(f'data frame load err: {str(df_err)}')
 
+    columns = None
+
+    if args.reduced:
+        columns = [DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+
     x, y, x_train, x_test, y_train, y_test = get_training_test_split(
-        df, [DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE])
+        df, columns)
 
     if args.scale:
         init_scale(x, y)
@@ -117,8 +124,8 @@ if __name__ == "__main__":
             'n_estimators': [5, 10, 20, 40, 100],
             'max_depth': [1, 2, 3, 4, 5, 6, 7],
             'eta': [0.01 * 2 ** x for x in range(8)],
-            'subsample': [0.9, 0.6, 0.7, 0.8, 1.0],
-            'colsample_bytree': [0.6, 0.7, 0.8, 0.9, 1.0],
+            'subsample': [0.8, 0.9, 1.0],
+            'colsample_bytree': [0.8, 0.9, 1.0],
         }
     else:
         raise ValueError(f'"{args.alg}" algorithm not implemented')

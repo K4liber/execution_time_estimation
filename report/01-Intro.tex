@@ -1,11 +1,11 @@
 %!TEX root = main.tex
 \section{Introduction}
 
-Computation Application Language (CAL) is designed to write large scale application in due to perform big data processing. Each CAL program consists of modules that are separetely executed in sequence (with parallelization possibility) on virtual machines and sending the results futher to next module of an application. CAL language is a part of the system developed under the Baltic LSC\cite{baltic_lsc_website} project.
+Computation Application Language (CAL) is designed to write large scale application in due to perform big data processing. Each CAL program consists of modules that are separetely executed in sequence (with parallelization possibility) on virtual machines and sending the results futher to a next module of an application. CAL language is a part of the system developed under the Baltic LSC\cite{baltic_lsc_website} project.
 
 During the data processing within the application run, each module is executed with some input data. It could be different kind of data e.g. data frame or set of images. The execution of a module is invoke on a virtual machine with limited resources (RAM, mCPUs, GPUs). The details of an input data and the execution environment resources will be used to estimate the overall application execution time and price on a concrete cluster.
 
-Baltic Large Scale Computing (BalticLSC\cite{baltic_lsc}) project is using CAL language to perform data processing tasks. Each task is an execution of a CAL application. Each module can be used in many CAL applications. We can say that a single module is a one block (commonly as a docker image) and an application is the schema of executing concrete set of blocks. Figure~\ref{fig:example_app} shows the example application that consits of a few modules to perform some image processing. Some of the modules (\textit{R}, \textit{G} and \textit{B} \textit{processors}) can be executed in parallel.
+Baltic Large Scale Computing (BalticLSC\cite{baltic_lsc}) project is using CAL language to perform data processing tasks. Each task is an execution of a CAL application. Each module can be used in many CAL applications. We can say that a single module is a one block (commonly as a docker image) and an application is the schema of executing a sequence of blocks. Figure~\ref{fig:example_app} shows the example application that consits of a few modules to perform a kind of an image processing. Some of the modules (\textit{R}, \textit{G} and \textit{B} \textit{processors}) can be executed in parallel.
 
 \begin{figure*}[!t]
 	\centering
