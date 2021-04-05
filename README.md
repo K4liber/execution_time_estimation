@@ -20,6 +20,8 @@ or just run the bash script to automatically generate date for an application us
 ```
 bash app_executions.sh APP_NAME
 ```
+Here you can find the full data set from all apps executions with all available input data sets:
+[results.csv](/execution_results/results.csv)
 ## Train and validate the model
 ### Available algorithms
 1. `svr`

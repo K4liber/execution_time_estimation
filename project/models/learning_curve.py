@@ -8,7 +8,7 @@ import numpy as np
 
 sys.path.append('.')
 
-from project.models.details import get_model_details, ModelDetails
+from project.models.details import get_model_details, ModelDetails, get_model_name
 from project.models.data import get_data_frame, DataFrameColumns
 from project.models.scale import (
     init_scale,
@@ -111,4 +111,5 @@ if __name__ == '__main__':
     x_plot_sorted = frac[index_sorted]
     y_plot_sorted = model_error[index_sorted]
     plt.plot(x_plot_sorted, y_plot_sorted)
-    plt.show()
+    fig_path = os.path.join(ROOT_DIR, 'models', args.alg, 'figures', get_model_name(model_scheme) + '.png')
+    plt.savefig(fig_path)
