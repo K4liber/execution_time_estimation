@@ -6,11 +6,11 @@ import sys
 
 import joblib
 from sklearn.model_selection import GridSearchCV
-from sklearn.preprocessing import StandardScaler
 import numpy as np
 
 sys.path.append('.')
 
+from project.models.scale import init_scale, transform_y, inverse_transform_y, transform_x
 from project.models.knn.algorithm import AlgKNN
 from project.models.svr.algorithm import AlgSVR
 from project.models.xgb.algorithm import AlgXGB
@@ -31,35 +31,6 @@ parser.add_argument('--frac', required=False, default=1, type=int, help='number 
 parser.add_argument('--scale', action=argparse.BooleanOptionalAction, help='scale the data before learning')
 parser.add_argument('--reduced', action=argparse.BooleanOptionalAction,
                     help='use only "CPUs" and "OVERALL_SIZE" features')
-
-
-def init_scale(x: any, y: any):
-    global scale_x
-    global scale_y
-    scale_x = StandardScaler().fit(x)
-    scale_y = StandardScaler().fit(y)
-
-
-def transform_x(x: any) -> any:
-    if scale_x is not None:
-        return scale_x.transform(x)
-    else:
-        return x
-
-
-def transform_y(y: any) -> any:
-    if scale_y is not None:
-        return scale_y.transform(y)
-    else:
-        return y
-
-
-def inverse_transform_y(y: any) -> any:
-    if scale_y is not None:
-        return scale_y.inverse_transform(y)
-    else:
-        return y
-
 
 def grid_search(algorithm, param_grid):
     return GridSearchCV(algorithm, param_grid=param_grid)
