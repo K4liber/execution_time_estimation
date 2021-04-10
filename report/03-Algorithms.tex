@@ -2,7 +2,7 @@
 \section{Algorithms}
 \subsection{Support Vector Regression}
 
-As a one of machine learning algorithms to estimate time of a CAL module execution we will use \textit{Epsilon-Support Vector Regression}\cite{svrc} (SVR) - it is based on Support Vector Machine (SVM, orginally named \textit{support-vector networks}\cite{svm}).
+As a one of machine learning algorithms to estimate time of a CAL module execution we will use \textit{Epsilon-Support Vector Regression}~\cite{svrc} (SVR) - it is based on Support Vector Machine (SVM, orginally named \textit{support-vector networks}\cite{svm}).
 
 We will use SVR model with a RBF kernel\cite{rbf_kernel} which is the most known flexible kernel and it could project the features vectors into infinite dimensions. It uses Taylor expansion which is equivalent to use an infinite sum over the polynomial kernels. It allows to model any function that is a sum of unknown degree polynomials.
 
@@ -52,3 +52,14 @@ As we already choosed the RBF kernel for the SVR algorithm, our modelling is sim
 	\includegraphics[width=0.45\textwidth]{gamma}
 \end{figure}
 You can find detailed information about C and gamma params in sklearn library documentation\cite{rbf_params}.
+
+\subsection{K-nearest Neighbors Regression}
+
+Another, examined algorithm used to estimating time of a module execution is a simple \textit{KNN}\footnote{\textit{KNN} - k-nearest neighbors} regression. Using the algorithm, a target is predicted by local interpolation of the targets associated of the nearest neighbors in the training set~\cite{knnreg}.In another words, the target assigned to a query point is computed based on the mean of the targets of its nearest neighbors.
+
+To use the algorithm we have to define values of the following parameters:
+\begin{enumerate}
+	\item \textit{k} - number of the nearest neighbors
+	\item \textit{weights} - weight function used in prediction. The basic nearest neighbors regression uses uniform weights: that is, each point in the local neighborhood contributes uniformly to the classification of a query point. Under some circumstances, it can be advantageous to weight points such that nearby points contribute more to the regression than faraway points. The weights can be calculated from the distances using any function for example the linear one.
+	\item \textit{algorithm} - the procedure to calculate k-nearest neighbors for the query point. It does not have a direct impact to the final regression result, but the parameters of the algorithm surely have. For example, using the BallTree algorithm we have to choose the \textit{metric} parameter that will be used to calculate the distance between data points. It could be, for example, the Minkowski~\cite{minkowski} metric with the l2 (standard Euclidean~\cite{euclidean}) distance metric or any function that will calculate the distance between two points.
+\end{enumerate}

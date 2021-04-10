@@ -53,6 +53,21 @@ David Cournapeau et~al.,
 \newblock {\em RBF parameters},
 \newblock sklearn, since 2007.
 
+\bibitem{knnreg}
+David Cournapeau et~al.,
+\newblock {\em KNN Regression},
+\newblock sklearn, visited 10.04.2021.
+
+\bibitem{minkowski}
+wikipedia.org,
+\newblock {\em Minkowski distance},
+\newblock wikipedia.org, visited 10.04.2021.
+
+\bibitem{euclidean}
+wikipedia.org,
+\newblock {\em Euclidean distance},
+\newblock wikipedia.org, visited 10.04.2021.
+
 \bibitem{LaTeX}
 Leslie Lamport,
 \newblock {\em A Document Preparation System: \LaTeX, User's Guide and

@@ -1,4 +1,5 @@
 import argparse
+import os
 from os.path import join
 from os import getenv
 import sys
@@ -6,10 +7,13 @@ import sys
 import joblib
 import pandas as pd
 import matplotlib.pyplot as plt
+import tkinter
+import matplotlib
+matplotlib.use('TkAgg')
 
 sys.path.append('.')
 
-from project.models.details import get_model_filepath, ModelDetails
+from project.models.details import get_model_filepath, ModelDetails, get_model_name
 from project.models.scale import init_scale, transform_x, transform_y, inverse_transform_y
 from project.utils.app_ids import app_name_to_id
 from project.utils.logger import logger
@@ -116,4 +120,10 @@ if __name__ == "__main__":
     plt.margins()
     plt.gcf().autofmt_xdate()
     ax.legend()
+    plt.title(f'Regression surface using {args.alg} algorithm')
+    '''
+    model_scheme = ModelDetails(args.app_name, 1.0, args.scale, args.reduced)
+    fig_path = os.path.join(ROOT_DIR, 'models', args.alg, 'figures', get_model_name(model_scheme) + '_surf.png')
+    plt.savefig(fig_path)
+    '''
     plt.show()

@@ -3,44 +3,44 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: Jornadas.bst
 Database file #1: biblio.bib
-You've used 14 entries,
+You've used 17 entries,
             1838 wiz_defined-function locations,
-            507 strings with 4600 characters,
-and the built_in function-call counts, 2100 in all, are:
-= -- 170
-> -- 64
+            515 strings with 4705 characters,
+and the built_in function-call counts, 2555 in all, are:
+= -- 207
+> -- 80
 < -- 0
-+ -- 30
-- -- 16
-* -- 74
-:= -- 339
-add.period$ -- 14
-call.type$ -- 14
++ -- 37
+- -- 20
+* -- 90
+:= -- 411
+add.period$ -- 17
+call.type$ -- 17
 change.case$ -- 0
 chr.to.int$ -- 0
-cite$ -- 14
-duplicate$ -- 140
-empty$ -- 267
-format.name$ -- 16
-if$ -- 499
+cite$ -- 17
+duplicate$ -- 170
+empty$ -- 324
+format.name$ -- 20
+if$ -- 608
 int.to.chr$ -- 0
-int.to.str$ -- 14
-missing$ -- 28
-newline$ -- 73
-num.names$ -- 14
-pop$ -- 98
+int.to.str$ -- 17
+missing$ -- 34
+newline$ -- 88
+num.names$ -- 17
+pop$ -- 119
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 29
+skip$ -- 36
 stack$ -- 0
 substring$ -- 0
-swap$ -- 14
+swap$ -- 17
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 0
-while$ -- 14
-width$ -- 16
-write$ -- 142
+while$ -- 17
+width$ -- 19
+write$ -- 172
