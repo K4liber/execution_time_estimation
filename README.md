@@ -28,6 +28,10 @@ Here you can find the full data set from all apps executions with all available 
 2. `xgb`
 3. `knn`
 ###
+1. Install requirements:
+   ```
+    python -m pip install -r requirements.txt
+   ```
 1. Grid search:
     ```
     python project/models/grid_search.py --app_name APP_NAME --alg ALGORITHM_NAME --frac 10 <--scale> <--reduced>

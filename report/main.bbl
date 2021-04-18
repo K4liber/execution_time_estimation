@@ -68,6 +68,16 @@ wikipedia.org,
 \newblock {\em Euclidean distance},
 \newblock wikipedia.org, visited 10.04.2021.
 
+\bibitem{scaler}
+David Cournapeau et~al.,
+\newblock {\em Standard scaler},
+\newblock scikit-learn.org, visited 18.04.2021.
+
+\bibitem{grid_search}
+David Cournapeau et~al.,
+\newblock {\em Grid search},
+\newblock scikit-learn.org, visited 18.04.2021.
+
 \bibitem{LaTeX}
 Leslie Lamport,
 \newblock {\em A Document Preparation System: \LaTeX, User's Guide and

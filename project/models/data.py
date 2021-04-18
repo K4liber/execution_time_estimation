@@ -1,5 +1,5 @@
 from os.path import isfile
-from typing import Union, Tuple, List
+from typing import Union, Tuple, List, Optional
 
 import pandas as pd
 import numpy as np
@@ -25,13 +25,10 @@ FEATURE_NAMES = [
 ]
 
 
-def get_data_frame(results_filepath: str, app_id: Union[int, None] = None,
-                   fraction: float = 1.0) -> Tuple[Union[None, pd.DataFrame], Union[None, ValueError]]:
+def get_data_frame(results_filepath: str, app_id: Union[int, None] = None, random_state: int = 0) \
+        -> Tuple[Union[None, pd.DataFrame], Union[None, ValueError]]:
     if not isfile(results_filepath):
         return None, ValueError(f'"{results_filepath}" is not a file')
-
-    if fraction < 0.1 or fraction > 1.0:
-        return None, ValueError(f'"fraction" value should be between 0.1 and 1.0, got = {fraction}')
 
     try:
         df = pd.read_csv(results_filepath, delimiter=',', header=0, names=[
@@ -48,14 +45,16 @@ def get_data_frame(results_filepath: str, app_id: Union[int, None] = None,
             app_df = df.loc[df[DataFrameColumns.APP_ID] == app_id]
             df = app_df.loc[:, df.columns != DataFrameColumns.APP_ID]
 
-        df = df.sample(frac=fraction)
-        return df, None
+        return df.sample(frac=1, random_state=random_state), None
     except BaseException as exception:
         return None, ValueError(exception)
 
 
-def get_training_test_split(df: pd.DataFrame, columns: Union[List[str], None] = None) \
-        -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def get_training_test_split(df: pd.DataFrame, train_fraction: float = 1.0, columns: Union[List[str], None] = None) -> \
+        (Optional[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]], Optional[ValueError]):
+    if train_fraction < 0.1 or train_fraction > 1.0:
+        return None, ValueError(f'"fraction" value should be between 0.1 and 1.0, got = {train_fraction}')
+
     if columns is None:
         x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
     else:
@@ -64,4 +63,6 @@ def get_training_test_split(df: pd.DataFrame, columns: Union[List[str], None] = 
     y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
     x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                         test_size=0.33, random_state=10)
+    x_train = x_train[:int(len(x_train) * train_fraction)]
+    y_train = y_train[:int(len(y_train) * train_fraction)]
     return x, y, x_train, x_test, y_train, y_test

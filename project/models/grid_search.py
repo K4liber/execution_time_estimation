@@ -11,7 +11,7 @@ import numpy as np
 sys.path.append('.')
 
 from project.models.scale import init_scale, transform_y, inverse_transform_y, transform_x
-from project.models.knn.algorithm import AlgKNN
+from project.models.knn.algorithm import AlgKNN, KNNParam
 from project.models.svr.algorithm import AlgSVR
 from project.models.xgb.algorithm import AlgXGB
 from project.utils.app_ids import app_name_to_id
@@ -32,6 +32,7 @@ parser.add_argument('--scale', action=argparse.BooleanOptionalAction, help='scal
 parser.add_argument('--reduced', action=argparse.BooleanOptionalAction,
                     help='use only "CPUs" and "OVERALL_SIZE" features')
 
+
 def grid_search(algorithm, param_grid):
     return GridSearchCV(algorithm, param_grid=param_grid)
 
@@ -45,29 +46,28 @@ if __name__ == "__main__":
         raise ValueError(f'missing app "{args.app_name}" from app map={str(app_name_to_id)}')
 
     results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
+    df, df_err = get_data_frame(results_filepath, app_id)
+
+    if df_err is not None:
+        raise ValueError(f'data frame load err: {str(df_err)}')
+
+    if args.reduced:
+        x = df[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+    else:
+        x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
+
+    y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
+
+    if args.scale:
+        init_scale(x, y)
+
+    x_scaled = transform_x(x)
+    y_scaled = transform_y(y)
 
     for fraction in [round(1.0 - x/10, 1) for x in range(args.frac)]:
-        df, df_err = get_data_frame(results_filepath, app_id, fraction)
-
-        if df_err is not None:
-            raise ValueError(f'data frame load err: {str(df_err)}')
-
-        if args.reduced:
-            x = df[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
-        else:
-            x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
-
-        y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
-
-        if args.scale:
-            init_scale(x, y)
-
-        x_scaled = transform_x(x)
-        y_scaled = transform_y(y)
-        # ML start
         if args.alg == 'knn':
             algorithm = AlgKNN.get()
-            param_grid = AlgKNN.get_params_grid()
+            param_grid = AlgKNN.get_params_grid({KNNParam.MAX_N: int(len(x_scaled) * fraction * 0.8) - 1})
         elif args.alg == 'svr':
             algorithm = AlgSVR.get()
             param_grid = AlgSVR.get_params_grid()
@@ -81,8 +81,9 @@ if __name__ == "__main__":
             algorithm=algorithm,
             param_grid=param_grid,
         )
-
-        model.fit(x_scaled, np.ravel(y_scaled))
+        x_train = x_scaled[:int(len(x_scaled) * fraction)]
+        y_train = y_scaled[:int(len(y_scaled) * fraction)]
+        model.fit(x_train, np.ravel(y_train))
         y_predicted_scaled = model.predict(x_scaled)
         # ML end
         y_predicted = inverse_transform_y(y_predicted_scaled)
@@ -105,9 +106,10 @@ if __name__ == "__main__":
                 logger.info('error relative [percentage] = %s' % error_rel)
 
         logger.info('############### SUMMARY ##################')
+        logger.info(f'algorithm: {args.alg}, app: {args.app_name}. fraction: {fraction}')
         logger.info('model best params:')
         logger.info(model.best_params_)
-        logger.info('training set length: %s' % len(y_list))
+        logger.info('training set length: %s' % len(y_train))
         logger.info('avg time [s] = %s' % str(sum(y_list) / len(y_list)))
         logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
         logger.info('avg error relative [percentage] = %s' % str(sum(errors_rel) / len(errors_rel)))

@@ -43,25 +43,7 @@ if __name__ == '__main__':
         raise ValueError(f'missing app "{args.app_name}" from app map={str(app_name_to_id)}')
 
     results_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results.csv')
-    df, df_err = get_data_frame(results_filepath, app_id)
-
-    if df_err is not None:
-        raise ValueError(f'data frame load err: {str(df_err)}')
-
     model_scheme = ModelDetails(args.app_name, 1.0, args.scale, args.reduced)
-
-    if args.reduced:
-        x = df[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
-    else:
-        x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
-
-    y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
-
-    if args.scale:
-        init_scale(x, y)
-
-    x_scaled = transform_x(x)
-    y_scaled = transform_y(y)
     frac = []
     model_error = []
 
@@ -74,12 +56,29 @@ if __name__ == '__main__':
 
             if model_scheme.the_same_run(model_details):
                 logger.info(f'validating model "{filename}"')
+                errors_rel = []
+                errors = []
                 model = joblib.load(os.path.join(models_dir, filename))
+                df, df_err = get_data_frame(results_filepath, app_id)
+
+                if df_err is not None:
+                    raise ValueError(f'data frame load err: {str(df_err)}')
+
+                if args.reduced:
+                    x = df[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+                else:
+                    x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
+
+                y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
+
+                if args.scale:
+                    init_scale(x, y)
+
+                x_scaled = transform_x(x)
+                y_scaled = transform_y(y)
                 y_predicted_scaled = model.predict(x_scaled)
                 y_predicted = inverse_transform_y(y_predicted_scaled)
                 y_list = list(y[DataFrameColumns.EXECUTION_TIME])
-                errors_rel = []
-                errors = []
 
                 for index, y_pred in enumerate(y_predicted):
                     y_pred = y_pred if y_pred > 0 else min(y_list)
@@ -89,16 +88,16 @@ if __name__ == '__main__':
                     error_rel = error * 100.0 / y_origin
                     errors_rel.append(error_rel)
 
-                    if os.getenv("DEBUG") == "true":
-                        logger.info('pred: %s' % y_pred)
-                        logger.info('origin: %s' % y_origin)
-                        logger.info('error [s] = %s' % error)
-                        logger.info('error relative [percentage] = %s' % error_rel)
+                if os.getenv("DEBUG") == "true":
+                    logger.info('pred: %s' % y_pred)
+                    logger.info('origin: %s' % y_origin)
+                    logger.info('error [s] = %s' % error)
+                    logger.info('error relative [percentage] = %s' % error_rel)
 
                 logger.info('############### SUMMARY ##################')
+                logger.info(model.get_params())
                 logger.info(f'training data fraction: {model_details.frac}')
                 logger.info('validation set length: %s' % len(y_list))
-                logger.info('avg time [s] = %s' % str(sum(y_list) / len(y_list)))
                 logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
                 error_rel = sum(errors_rel) / len(errors_rel)
                 logger.info('avg error relative [percentage] = %s' % str(error_rel))
