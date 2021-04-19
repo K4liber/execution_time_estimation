@@ -8,6 +8,6 @@ class AppID:
 app_name_to_id = {
     'video_splitter': AppID.VideoSplitter,
     'face_recogniser': AppID.FaceRecogniser,
-    'xgboost_grid_search': AppID.XGBoostGridSearch,
+    'xgb_grid_search': AppID.XGBoostGridSearch,
     'images_merger': AppID.ImagesMerger,
 }

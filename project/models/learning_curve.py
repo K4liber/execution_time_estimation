@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     results_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results.csv')
     model_scheme = ModelDetails(args.app_name, 1.0, args.scale, args.reduced)
-    frac = []
+    data_points = []
     model_error = []
 
     for filename in os.listdir(models_dir):
@@ -101,14 +101,17 @@ if __name__ == '__main__':
                 logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
                 error_rel = sum(errors_rel) / len(errors_rel)
                 logger.info('avg error relative [percentage] = %s' % str(error_rel))
-                frac.append(model_details.frac)
+                data_points.append(model_details.frac*len(y_list))
                 model_error.append(error_rel)
 
-    frac = np.array(frac)
+    data_points = np.array(data_points)
     model_error = np.array(model_error)
-    index_sorted = np.argsort(frac)
-    x_plot_sorted = frac[index_sorted]
+    index_sorted = np.argsort(data_points)
+    x_plot_sorted = data_points[index_sorted]
     y_plot_sorted = model_error[index_sorted]
     plt.plot(x_plot_sorted, y_plot_sorted)
+    plt.xlabel('training samples quantity')
+    plt.ylabel('regression relative error [%]')
+    plt.title(f'Learning curve ({args.alg}, {args.app_name})')
     fig_path = os.path.join(ROOT_DIR, 'models', args.alg, 'figures', get_model_name(model_scheme) + '.png')
     plt.savefig(fig_path)

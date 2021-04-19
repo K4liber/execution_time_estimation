@@ -4,7 +4,7 @@ Project for the classes 'Statistic under AI and its application to engineering s
 ### Available apps
 1. `video_splitter`
 2. `face_recogniser`
-3. `xgboost_grid_search`
+3. `xgb_grid_search`
 4. `images_merger`  
 ### Auto data generator
 1. Build app execution image:  

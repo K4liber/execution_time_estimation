@@ -14,8 +14,8 @@ class AlgSVR(Algorithm):
         c_min = 1000.0  # error cost
         grid = {
             "gamma": [gamma_min * 2 ** x for x in range(8)],
-            "epsilon": [epsilon_min * 2 ** x for x in range(11)],
-            "C": [c_min * 2 ** x for x in range(12)],
+            "epsilon": [epsilon_min * 2 ** x for x in range(7)],
+            "C": [c_min * 2 ** x for x in range(11)],
         }
         logger.info(grid)
         return grid

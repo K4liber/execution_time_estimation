@@ -61,8 +61,7 @@ def get_training_test_split(df: pd.DataFrame, train_fraction: float = 1.0, colum
         x = df[columns]
 
     y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
-    x_train, x_test, y_train, y_test = train_test_split(x, y,
-                                                        test_size=0.33, random_state=10)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.33, random_state=10)
     x_train = x_train[:int(len(x_train) * train_fraction)]
     y_train = y_train[:int(len(y_train) * train_fraction)]
     return x, y, x_train, x_test, y_train, y_test

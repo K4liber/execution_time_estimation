@@ -11,6 +11,13 @@ def init_scale(x: any, y: any):
     scale_y = StandardScaler().fit(y)
 
 
+def dismiss_scale():
+    global scale_x
+    global scale_y
+    scale_x = None
+    scale_y = None
+
+
 def transform_x(x: any) -> any:
     if scale_x is not None:
         return scale_x.transform(x)
