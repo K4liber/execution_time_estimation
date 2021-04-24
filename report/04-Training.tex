@@ -1,5 +1,14 @@
 %!TEX root = main.tex
 \section{Training and validation}
+\begin{figure*}[!t]
+	\centering
+	\begin{minipage}{0.85\linewidth}
+		\includegraphics[width=1.0\textwidth]{learning_curve_multi}
+	\end{minipage}
+	\caption{Learning curve per module.}
+	\label{fig:curve}
+\end{figure*}
+
 The training pipeline for each module contains the following steps:
 \begin{enumerate}
 	\item Having the 80 data points, we divide them into training and test data sets with 1:4 proportion.
@@ -38,13 +47,6 @@ The training pipeline for each module contains the following steps:
 		\centering
 		\label{fig:surf_knn_video_splitter}
 		\includegraphics[width=0.49\textwidth]{surf_knn_video_splitter}
-	\end{figure}
-
-	\begin{figure}[!htb]
-		\caption{Visualization of the SVR's epsilon parameter~\citeinside{epsilon}.}
-		\centering
-		\label{fig:curve_knn_video_splitter}
-		\includegraphics[width=0.49\textwidth]{curve_knn_video_splitter}
 	\end{figure}
 		
 	\subsection{Final results}

@@ -8,7 +8,7 @@ import numpy as np
 sys.path.append('.')
 
 from project.models.details import get_model_details, ModelDetails, get_model_name
-from project.models.data import get_data_frame, DataFrameColumns
+from project.models.data import get_data_frame, DataFrameColumns, Const
 from project.models.scale import (
     init_scale,
     transform_x,
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     if not os.path.isdir(svr_models_dir):
         raise ValueError(f'"{svr_models_dir}" is not a directory')
 
-    results_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results.csv')
+    results_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_test.csv')
     fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex=True, sharey=True)
     # fig.suptitle('Comparing the learning curves per module')
     app_id_to_axes = {
@@ -102,7 +102,7 @@ if __name__ == '__main__':
                     logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
                     error_rel = sum(errors_rel) / len(errors_rel)
                     logger.info('avg error relative [percentage] = %s' % str(error_rel))
-                    knn_data_points.append(knn_model_details.frac*len(y_list))
+                    knn_data_points.append(knn_model_details.frac * Const.TRAINING_SAMPLES)
                     knn_model_error.append(error_rel)
 
         knn_data_points = np.array(knn_data_points)
@@ -143,7 +143,16 @@ if __name__ == '__main__':
                     y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
 
                     if svr_model_details.scale:
-                        init_scale(x, y)
+                        results_train_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_train.csv')
+                        df_train, df_err = get_data_frame(results_train_filepath, app_id)
+
+                        if df_err is not None:
+                            raise ValueError(f'data frame load err: {str(df_err)}')
+
+                        init_scale(
+                            df_train.loc[:, df_train.columns != DataFrameColumns.EXECUTION_TIME],
+                            df_train.loc[:, df_train.columns == DataFrameColumns.EXECUTION_TIME]
+                        )
                     else:
                         dismiss_scale()
 
@@ -174,7 +183,7 @@ if __name__ == '__main__':
                     logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
                     error_rel = sum(errors_rel) / len(errors_rel)
                     logger.info('avg error relative [percentage] = %s' % str(error_rel))
-                    svr_data_points.append(svr_model_details.frac * len(y_list))
+                    svr_data_points.append(svr_model_details.frac * Const.TRAINING_SAMPLES)
                     svr_model_error.append(error_rel)
 
         svr_data_points = np.array(svr_data_points)

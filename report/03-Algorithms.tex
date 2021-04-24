@@ -63,3 +63,10 @@ To use the algorithm we have to define values of the following parameters:
 	\item \textit{weights} - weight function used in prediction. The basic nearest neighbors regression uses uniform weights: that is, each point in the local neighborhood contributes uniformly to the classification of a query point. Under some circumstances, it can be advantageous to weight points such that nearby points contribute more to the regression than faraway points. The weights can be calculated from the distances using any function for example the linear one.
 	\item \textit{algorithm} - the procedure to calculate k-nearest neighbors for the query point. It does not have a direct impact to the final regression result, but the parameters of the algorithm surely have. For example, using the BallTree algorithm we have to choose the \textit{metric} parameter that will be used to calculate the distance between data points. It could be, for example, the Minkowski~\cite{minkowski} metric with the l2 (standard Euclidean~\cite{euclidean}) distance metric or any function that will calculate the distance between two points.
 \end{enumerate}
+
+\begin{figure}[!htb]
+	\caption{KNN out of range fail.}
+	\centering
+	\label{fig:knn}
+	\includegraphics[width=0.45\textwidth]{knn}
+\end{figure}

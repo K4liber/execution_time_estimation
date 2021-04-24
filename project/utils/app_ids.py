@@ -1,3 +1,6 @@
+from typing import Dict
+
+
 class AppID:
     VideoSplitter = 1
     FaceRecogniser = 2
@@ -11,3 +14,9 @@ app_name_to_id = {
     'xgb_grid_search': AppID.XGBoostGridSearch,
     'images_merger': AppID.ImagesMerger,
 }
+
+
+def get_app_id_to_name() -> Dict[int, str]:
+    return {
+        app_id: app_name for app_name, app_id in app_name_to_id.items()
+    }

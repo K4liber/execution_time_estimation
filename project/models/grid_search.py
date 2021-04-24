@@ -45,7 +45,7 @@ if __name__ == "__main__":
     if app_id is None:
         raise ValueError(f'missing app "{args.app_name}" from app map={str(app_name_to_id)}')
 
-    results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
+    results_filepath = join(ROOT_DIR, '..', 'execution_results/results_train.csv')
     df, df_err = get_data_frame(results_filepath, app_id)
 
     if df_err is not None:
