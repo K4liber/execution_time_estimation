@@ -41,34 +41,52 @@ if __name__ == "__main__":
         raise ValueError(f'missing app "{args.app_name}" from app map={str(app_name_to_id)}')
 
     results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
+    results_test_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_test.csv')
+    results_train_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_train.csv')
     df, df_err = get_data_frame(results_filepath, app_id)
+    df_test, df_test_err = get_data_frame(results_test_filepath, app_id)
+    df_train, df_train_err = get_data_frame(results_train_filepath, app_id)
 
-    if df_err is not None:
-        raise ValueError(f'data frame load err: {str(df_err)}')
-
-    columns = None
+    if df_err is not None or df_test_err is not None or df_train_err is not None:
+        raise ValueError(f'data frame load err')
 
     if args.reduced:
-        columns = [DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+        x = df[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+        x_test = df_test[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+        x_train = df_train[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
+    else:
+        x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
+        x_test = df_test.loc[:, df_test.columns != DataFrameColumns.EXECUTION_TIME]
+        x_train = df_train.loc[:, df_train.columns != DataFrameColumns.EXECUTION_TIME]
 
-    x, y, _, _, _, _ = get_training_test_split(df, 1.0, columns)
+    y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
+    y_test = df_test.loc[:, df_test.columns == DataFrameColumns.EXECUTION_TIME]
+    y_train = df_train.loc[:, df_train.columns == DataFrameColumns.EXECUTION_TIME]
 
     if args.scale:
         init_scale(x, y)
 
+    x_test_scaled = transform_x(x_test)
     x_scaled = transform_x(x)
-    y_scaled = transform_y(y)
-
-    x_scatter = x[DataFrameColumns.OVERALL_SIZE]
-    y_scatter = x[DataFrameColumns.CPUS]
-    z_scatter = y[DataFrameColumns.EXECUTION_TIME]
+    x_train_scaled = transform_x(x_train)
+    y_train_scaled = transform_y(y_train)
+    scaled_x_train_df = pd.DataFrame(x_train_scaled, columns=x.columns)
+    scaled_y_train_df = pd.DataFrame(y_train_scaled, columns=y.columns)
+    x_plot_train = x_train[DataFrameColumns.OVERALL_SIZE]
+    y_plot_train = x_train[DataFrameColumns.CPUS]
+    z_plot_train = y_train[DataFrameColumns.EXECUTION_TIME]
+    x_plot_test = x_test[DataFrameColumns.OVERALL_SIZE]
+    y_plot_test = x_test[DataFrameColumns.CPUS]
+    z_plot_test = y_test[DataFrameColumns.EXECUTION_TIME]
     # plot data points
     ax = plt.axes(projection='3d')
-    ax.set_xlabel('total size [B]')
+    ax.set_xlabel('total size [B]', linespacing=10)
+    ax.xaxis._axinfo['label']['space_factor'] = 10
     ax.set_ylabel('mCPUSs')
     ax.set_zlabel('time [s]')
     ax.dist = 8
-    ax.scatter(x_scatter, y_scatter, z_scatter, c='#cc0000', alpha=1, label='training points')
+    ax.scatter(x_plot_train, y_plot_train, z_plot_train, c='#2ca02c', alpha=1, label='training points')
+    ax.scatter(x_plot_test, y_plot_test, z_plot_test, label='test points', c='#cc0000', alpha=1)
     # Load model
     model_details = ModelDetails(args.app_name, args.frac, args.scale, args.reduced)
     model_filepath, err = get_model_filepath(args.alg, model_details)
@@ -78,15 +96,17 @@ if __name__ == "__main__":
 
     model = joblib.load(model_filepath)
     z_svr = model.predict(x_scaled)
+    z_svr_test = model.predict(x_test_scaled)
     # ML end
-    z_svr_inverse = inverse_transform_y(z_svr)
-    z_origin_list = list(z_scatter)
+    z_svr_test_inverse = inverse_transform_y(z_svr_test)
+    y_test_list = list(y_test[DataFrameColumns.EXECUTION_TIME])
+    y_train_list = list(y_train[DataFrameColumns.EXECUTION_TIME])
     errors_rel = []
     errors = []
 
-    for index, z_pred in enumerate(z_svr_inverse):
-        z_pred = z_pred if z_pred > 0 else min(z_origin_list)
-        z_origin = z_origin_list[index]
+    for index, z_pred in enumerate(z_svr_test_inverse):
+        z_pred = z_pred if z_pred > 0 else min(y_train_list)
+        z_origin = y_test_list[index]
         error = abs(z_pred - z_origin)
         errors.append(error)
         error_rel = error * 100.0 / z_origin
@@ -99,8 +119,9 @@ if __name__ == "__main__":
             logger.info('error relative [percentage] = %s' % error_rel)
 
     logger.info('############### SUMMARY ##################')
-    logger.info('set length: %s' % len(x))
-    logger.info('avg time [s] = %s' % str(sum(z_origin_list) / len(z_origin_list)))
+    logger.info('training set length: %s' % len(y_train_list))
+    logger.info('test set length: %s' % len(x_test))
+    logger.info('avg time [s] = %s' % str(sum(y_test_list) / len(y_test_list)))
     logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
     logger.info('avg error relative [percentage] = %s' % str(sum(errors_rel) / len(errors_rel)))
     # Plot prediction surface
@@ -111,5 +132,10 @@ if __name__ == "__main__":
     plt.margins()
     plt.gcf().autofmt_xdate()
     ax.legend()
-    plt.title(f'Regression surface ({str(args.alg).upper()}, {args.app_name})')
+    plt.title(f'Regression surface using {str(args.alg).upper()} algorithm')
+    '''
+    model_scheme = ModelDetails(args.app_name, 1.0, args.scale, args.reduced)
+    fig_path = os.path.join(ROOT_DIR, 'models', args.alg, 'figures', get_model_name(model_scheme) + '_surf.png')
+    plt.savefig(fig_path)
+    '''
     plt.show()
