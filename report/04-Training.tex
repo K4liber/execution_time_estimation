@@ -97,19 +97,19 @@ The training pipeline for each module contains the following steps:
 		\caption{\label{tab:example_df}The final results.}
 		\begin{minipage}{1\linewidth}
 			{\footnotesize
-				\begin{tabular}{|c| c >{\columncolor[gray]{0.9}}c| c c |} 
+				\begin{tabular}{|c| c >{\columncolor[gray]{0.9}}c| c >{\columncolor[gray]{0.9}}c|} 
 					\hline
 					Algorithm: & SVR & & KNN & \\
 					\hline
 					& best params & relative error [\%] & best params & relative error [\%] \\ [0.5ex] 
 					\hline\hline
-					\textit{video\_splitter} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: 1e-04, \textit{p}: 2e-06 & 3.909 \\ 
+					\textit{video\_splitter} & \textit{C}: 512e+03, \textit{$\gamma$}: 8e-04, \textit{$\epsilon$}: 3.2e-05 & 46.9 & \textit{n}: 2, \textit{weights}: \textit{distance}, \textit{p}: 1 & 39.3 \\ 
 					\hline
-					\textit{face\_recogniser} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: 1e-04, \textit{p}: 2e-06 & 3.909 \\
+					\textit{face\_recogniser} & \textit{C}: 64e+03, \textit{$\gamma$}: 3.2e-05, \textit{$\epsilon$}: 8e-06 & 16.7 & \textit{n}: 1, \textit{weights}: \textit{uniform}, \textit{p}: 1 & 31.4 \\
 					\hline
-					\textit{xgb\_grid\_search} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: \textit{uniform}, \textit{p}: 1 & 49.3 \\
+					\textit{xgb\_grid\_search} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 44.7 & \textit{n}: 2, \textit{weights}: \textit{uniform}, \textit{p}: 1 & 49.3 \\
 					\hline
-					\textit{images\_merger} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: 1e-04, \textit{p}: 2e-06 & 3.909 \\
+					\textit{images\_merger} & \textit{C}: 512e+03, \textit{$\gamma$}: 1.6e-03, \textit{$\epsilon$}: 8e-06 & 40.6 & \textit{n}: 2, \textit{weights}: \textit{distance}, \textit{p}: 1 & 41.7 \\
 					\hline
 				\end{tabular}
 			}

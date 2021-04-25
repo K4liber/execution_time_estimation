@@ -52,7 +52,10 @@ if __name__ == "__main__":
     y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
     y_test = df_test.loc[:, df_test.columns == DataFrameColumns.EXECUTION_TIME]
     y_train = df_train.loc[:, df_train.columns == DataFrameColumns.EXECUTION_TIME]
-    init_scale(x, y)
+    init_scale(
+        df_train.loc[:, df_train.columns != DataFrameColumns.EXECUTION_TIME],
+        df_train.loc[:, df_train.columns == DataFrameColumns.EXECUTION_TIME]
+    )
     x_test_scaled = transform_x(x_test)
     x_scaled = transform_x(x)
     x_train_scaled = transform_x(x_train)
