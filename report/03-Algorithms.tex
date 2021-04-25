@@ -29,27 +29,21 @@ Figure~\ref{fig:svrc} shows the wanted hyperplane with marked \textit{$\xi$} and
 As we already choosed the RBF kernel for the SVR algorithm, our modelling is simplified to just find the best values of the following hyperparameters\cite{svr}:
 \begin{enumerate}
 	\item \textit{C} -the weight of an error cost. The regularization\footnote{Regularization is a way to give a penalty to certain models (usually overly complex ones)} hyperparameer, have to be strictly positive. The example from the figure use l1 penalty (the library that we use to modelling use the squared epsilon-insensitive loss with l2 penalty). The strength of the regularization is inversely proportional to C. The larger value of C the more variance is introduced into the model. 
-	\item \textit{epsilon} - It specifies the epsilon-tube within which no penalty is associated in the training loss function with points predicted within a distance epsilon from the actual value. As it is shown of the figure~\ref{fig:epsilon} the grey data points do not provide any penalty to the loss function because they are within the allowed epsilon range around the approximation\footnote{\label{figure_example}The figure is based on some example data and it only shows the hyperparameter influence on model.}.
+	\item \textit{epsilon} - It specifies the epsilon-tube within which no penalty is associated in the training loss function with points predicted within a distance epsilon from the actual value. As it is shown of the figure~\ref{fig:svr_epsilon_gamma} the green data points do not provide any penalty to the loss function because they are within the allowed epsilon range around the approximation\footnote{\label{figure_example}The figure is based on some example data and it only shows the hyperparameter influence on model.}.
 	\item \textit{gamma} - The \textit{gamma} hyperparameter can be seen as the inverse of the radius of influence of samples selected by the model as support vectors. Increasing the value of \textit{gamma} hyperparameter causes the variance increase what is shown in the figure~\ref{fig:gamma}\footnotemark[\getcountref{figure_example}].
 	
 \end{enumerate}
 \begin{figure}[!htb]
-	\caption{Visualization of the SVR's epsilon parameter~\citeinside{epsilon}.}
+	\caption{Visualization of the SVR's epsilon and gamma parameters~\citeinside{epsilon}.}
 	\centering
-	\label{fig:epsilon}
-	\includegraphics[width=0.45\textwidth]{epsilon}
-\end{figure}
-\begin{figure}[!htb]
-	\caption{SVR's C parameter~\citeinside{svrc} influence on model.}
-	\centering
-	\label{fig:svrc}
-	\includegraphics[width=0.45\textwidth]{svrC}
+	\label{fig:svr_epsilon_gamma}
+	\includegraphics[width=0.5\textwidth]{svr_epsilon_gamma}
 \end{figure}
 \begin{figure}[!htb]
 	\caption{SVR's gamma hyperparameter~\citeinside{gamma} influence on the model variance.}
 	\centering
 	\label{fig:gamma}
-	\includegraphics[width=0.45\textwidth]{gamma}
+	\includegraphics[width=0.45\textwidth]{svr_gamma}
 \end{figure}
 You can find detailed information about C and gamma params in sklearn library documentation\cite{rbf_params}.
 
@@ -64,9 +58,14 @@ To use the algorithm we have to define values of the following parameters:
 	\item \textit{algorithm} - the procedure to calculate k-nearest neighbors for the query point. It does not have a direct impact to the final regression result, but the parameters of the algorithm surely have. For example, using the BallTree algorithm we have to choose the \textit{metric} parameter that will be used to calculate the distance between data points. It could be, for example, the Minkowski~\cite{minkowski} metric with the l2 (standard Euclidean~\cite{euclidean}) distance metric or any function that will calculate the distance between two points.
 \end{enumerate}
 
-\begin{figure}[!htb]
-	\caption{KNN out of range fail.}
+\begin{figure*}[!t]
 	\centering
-	\label{fig:knn}
-	\includegraphics[width=0.5\textwidth]{knn}
-\end{figure}
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{svr_out_of_range}
+	\end{minipage}
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{knn_out_of_range}
+	\end{minipage}
+	\caption{Regression on the out of training range data.}
+	\label{fig:out_of_range}
+\end{figure*}

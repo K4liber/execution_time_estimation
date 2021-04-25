@@ -104,6 +104,7 @@ if __name__ == "__main__":
 
     knn_model = joblib.load(knn_model_filepath)
     z_knn = knn_model.predict(x)
+    z_knn_test = knn_model.predict(x_test)
     # Efficiency
     z_svr_test = svr_model.predict(x_test_scaled)
     z_svr_test_inverse = inverse_transform_y(z_svr_test)
@@ -111,8 +112,9 @@ if __name__ == "__main__":
     y_train_list = list(y_train[DataFrameColumns.EXECUTION_TIME])
     errors_rel = []
     errors = []
+    predictions = z_svr_test_inverse if args.alg == 'svr' else z_knn_test
 
-    for index, z_pred in enumerate(z_svr_test_inverse):
+    for index, z_pred in enumerate(predictions):
         z_pred = z_pred if z_pred > 0 else min(y_train_list)
         z_origin = y_test_list[index]
         error = abs(z_pred - z_origin)
@@ -120,18 +122,16 @@ if __name__ == "__main__":
         error_rel = error * 100.0 / z_origin
         errors_rel.append(error_rel)
 
-        if getenv("DEBUG") == "true":
-            logger.info('pred: %s' % z_pred)
-            logger.info('origin: %s' % z_origin)
-            logger.info('error [s] = %s' % error)
-            logger.info('error relative [percentage] = %s' % error_rel)
-
     logger.info('############### SUMMARY ##################')
-    logger.info('training set length: %s' % len(y_train_list))
-    logger.info('test set length: %s' % len(x_test))
     logger.info('avg time [s] = %s' % str(sum(y_test_list) / len(y_test_list)))
     logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
     logger.info('avg error relative [percentage] = %s' % str(sum(errors_rel) / len(errors_rel)))
+
+    if args.alg == 'svr':
+        logger.info(f'best params: {str(svr_model.get_params())}')
+    elif args.alg == 'knn':
+        logger.info(f'best params: {str(knn_model.get_params())}')
+
     # Plot prediction surface
     z_svr_inverse = inverse_transform_y(z_svr)
     x_plot = x[DataFrameColumns.OVERALL_SIZE].to_numpy()

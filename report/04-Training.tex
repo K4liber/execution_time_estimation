@@ -94,20 +94,22 @@ The training pipeline for each module contains the following steps:
 	
 	\begin{table*}[!t]
 		\centering
-		\caption{\label{tab:example_df}The results.}
-		\begin{minipage}{0.9\linewidth}
+		\caption{\label{tab:example_df}The final results.}
+		\begin{minipage}{1\linewidth}
 			{\footnotesize
-				\begin{tabular}{|c c c c >{\columncolor[gray]{0.9}}c|} 
+				\begin{tabular}{|c| c >{\columncolor[gray]{0.9}}c| c c |} 
 					\hline
-					Algorithm & Module name & best params & error [s] & relative error [\%] \\ [0.5ex] 
+					Algorithm: & SVR & & KNN & \\
+					\hline
+					& best params & relative error [\%] & best params & relative error [\%] \\ [0.5ex] 
 					\hline\hline
-					\textit{SVR} & \textit{Video splitter} & 3131 & 3131 & 3.909 \\ 
+					\textit{video\_splitter} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: 1e-04, \textit{p}: 2e-06 & 3.909 \\ 
 					\hline
-					\textit{SVR} & \textit{Face recogniser} & 1477 & 1477 & 1.981  \\
+					\textit{face\_recogniser} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: 1e-04, \textit{p}: 2e-06 & 3.909 \\
 					\hline
-					\textit{SVR} & \textit{XGB grid search} & 1229 & 1229 & 11.371 \\
+					\textit{xgb\_grid\_search} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: \textit{uniform}, \textit{p}: 1 & 49.3 \\
 					\hline
-					\textit{SVR} & \textit{Images merger} & 1229 & 1229 & 11.371 \\ [1ex] 
+					\textit{images\_merger} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 3131 & \textit{n}: 2, \textit{weights}: 1e-04, \textit{p}: 2e-06 & 3.909 \\
 					\hline
 				\end{tabular}
 			}
