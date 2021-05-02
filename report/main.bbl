@@ -14,9 +14,34 @@ FILL IT,
 \newblock FILL IT, 14.03.2021.
 
 \bibitem{wcet}
-FILL IT,
-\newblock {\em Estimation of the execution time in real-time systems},
-\newblock FILL IT, 22.01.2016.
+``Estimation of the execution time in real-time systems,''
+\newblock .
+
+\bibitem{time-analysis}
+``Execution time analysis for embedded real-time systems,''
+\newblock .
+
+\bibitem{images-processing-time}
+``Using online worst-case execution time analysis and alternative tasks in real
+  time systems,''
+\newblock .
+
+\bibitem{ga}
+``A prediction model for measurement-based timing analysis,''
+\newblock .
+
+\bibitem{surogate}
+``Determination of worst-case data using an adaptive surrogate model for
+  real-time system,''
+\newblock .
+
+\bibitem{program-features}
+``Nonlinear approach for estimating wcet during programming phase,''
+\newblock .
+
+\bibitem{small-n}
+``A solution to minimum sample size for regressions,''
+\newblock .
 
 \bibitem{svrc}
 Dr.~Saed Sayad,
@@ -37,16 +62,6 @@ Wikipedia,
 David Cournapeau et~al.,
 \newblock {\em Support Vector Regression},
 \newblock sklearn, visited 27.12.2020.
-
-\bibitem{epsilon}
-FILL IT,
-\newblock {\em Visualization of the epsilon parameter},
-\newblock FILL IT, 14.03.2021.
-
-\bibitem{gamma}
-FILL IT,
-\newblock {\em Visualization of the gamma parameter},
-\newblock FILL IT, 22.01.2016.
 
 \bibitem{rbf_params}
 David Cournapeau et~al.,
@@ -78,25 +93,8 @@ David Cournapeau et~al.,
 \newblock {\em Grid search},
 \newblock scikit-learn.org, visited 18.04.2021.
 
-\bibitem{LaTeX}
-Leslie Lamport,
-\newblock {\em A Document Preparation System: \LaTeX, User's Guide and
-  Reference Manual},
-\newblock Addison Wesley Publishing Company, 1986.
-
-\bibitem{LaTeXD}
-Helmut Kopka,
-\newblock {\em \LaTeX, eine Einführung},
-\newblock Addison-Wesley, 1989.
-
-\bibitem{TeX}
-D.K. Knuth,
-\newblock {\em The {\rm T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}book},
-\newblock Addison-Wesley, 1989.
-
-\bibitem{METAFONT}
-D.E. Knuth,
-\newblock {\em The {\rm METAFONT} book},
-\newblock Addison Wesley Publishing Company, 1986.
+\bibitem{complexity}
+``The history of algorithmic complexity,''
+\newblock .
 
 \end{thebibliography}

@@ -22,6 +22,7 @@
 \usepackage{msc}
 \usepackage{xcolor,colortbl}
 \usepackage{hyperref}
+\usepackage{float}
 
 \makeatletter
 % \getcountref extracts the raw reference and
@@ -74,7 +75,7 @@
      numberfirstline = false,
      firstnumber=auto,
      breaklines=true,
-     %
+     %The worst-case complexity of an algorithm is the greatest number of operations needed to solve the problem over an input data of a given size
      escapeinside={(*@}{@*)},
      literate={á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
    }
@@ -129,7 +130,7 @@
 \begin{document}
 
 \title{
-	Estimating time of a CAL module execution \\
+	Run-time estimation for data processing tasks \\
 	\large Statistic under AI and its application to engineering sciences
 }
 
@@ -145,11 +146,11 @@
 \thispagestyle{empty} % Oculta el número de la primera página
 
 \begin{abstract}
-Abstract ...
+The aim of the research is to estimate the run-time of a data processing task (specific execution of a program or an algorithm) before the run. In the article we do not strictly focus on providing an estimation of maximum execution time (WCET\footnote{Worst-case execution time - the maximum amount of time that the execution can take.}). We try to estimate the average-case execution time (ACET) which is absolutely enough for this use case requirements. The chosen approach is to create machine learning models using historical or testing data of the executions. Each execution of a program has the set of explanatory variables as properties of an input data and execution environment. Obviously, response variable is the run-time of a program.
 \end{abstract}
 
 \begin{keywords}
-Machine learning, BalticLSC ...
+multicore computing, data processing, analysis of algorithms, run-time estimation, nonlinear regression, small-p regression, small-n regression, machine learning, KNN, SVR, RBF
 \end{keywords}
 
 %Añade los ficheros que necesites:

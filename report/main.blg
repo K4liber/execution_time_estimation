@@ -3,44 +3,111 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: Jornadas.bst
 Database file #1: biblio.bib
-You've used 19 entries,
+I was expecting a `,' or a `}'---line 86 of file biblio.bib
+ :  
+ :  url = {https://link.springer.com/article/10.1134/S0361768816010059}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 93 of file biblio.bib
+ :  
+ :  url = {http://www.es.mdh.se/pdf_publications/2840.pdf}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 99 of file biblio.bib
+ :  
+ :  url = {https://core.ac.uk/download/pdf/52106972.pdf}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 104 of file biblio.bib
+ :  
+ :  url = {https://www.researchgate.net/publication/316612110_A_prediction_model_for_measurement-based_timing_analysis}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 109 of file biblio.bib
+ :  
+ :  url = {https://www.researchgate.net/publication/330739816_Determination_of_Worst-Case_Data_Using_an_Adaptive_Surrogate_Model_for_Real-Time_System}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 114 of file biblio.bib
+ :  
+ :  url = {https://link-1springer-1com-1000096uu0143.eczyt.bg.pw.edu.pl/content/pdf/10.1007/s10586-016-0606-5.pdf}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 119 of file biblio.bib
+ :  
+ :  url = {https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0229345}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 124 of file biblio.bib
+ :  
+ :  url = {https://scholarworks.umt.edu/cgi/viewcontent.cgi?referer=https://www.google.com/&httpsredir=1&article=1375&context=tme}
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--I didn't find a database entry for "epsilon"
+Warning--I didn't find a database entry for "gamma"
+Warning--empty author in wcet
+Warning--empty journal in wcet
+Warning--empty year in wcet
+Warning--empty author in time-analysis
+Warning--empty journal in time-analysis
+Warning--empty year in time-analysis
+Warning--empty author in images-processing-time
+Warning--empty journal in images-processing-time
+Warning--empty year in images-processing-time
+Warning--empty author in ga
+Warning--empty journal in ga
+Warning--empty year in ga
+Warning--empty author in surogate
+Warning--empty journal in surogate
+Warning--empty year in surogate
+Warning--empty author in program-features
+Warning--empty journal in program-features
+Warning--empty year in program-features
+Warning--empty author in small-n
+Warning--empty journal in small-n
+Warning--empty year in small-n
+Warning--empty author in complexity
+Warning--empty journal in complexity
+Warning--empty year in complexity
+You've used 20 entries,
             1838 wiz_defined-function locations,
-            521 strings with 4782 characters,
-and the built_in function-call counts, 2881 in all, are:
-= -- 233
-> -- 96
+            512 strings with 4889 characters,
+and the built_in function-call counts, 2691 in all, are:
+= -- 189
+> -- 76
 < -- 0
-+ -- 43
-- -- 24
-* -- 102
-:= -- 463
-add.period$ -- 19
-call.type$ -- 19
-change.case$ -- 0
++ -- 37
+- -- 17
+* -- 155
+:= -- 382
+add.period$ -- 20
+call.type$ -- 20
+change.case$ -- 8
 chr.to.int$ -- 0
-cite$ -- 19
-duplicate$ -- 190
-empty$ -- 362
-format.name$ -- 24
-if$ -- 686
+cite$ -- 44
+duplicate$ -- 176
+empty$ -- 341
+format.name$ -- 17
+if$ -- 609
 int.to.chr$ -- 0
-int.to.str$ -- 19
-missing$ -- 38
-newline$ -- 98
-num.names$ -- 19
-pop$ -- 133
+int.to.str$ -- 20
+missing$ -- 32
+newline$ -- 95
+num.names$ -- 12
+pop$ -- 132
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 42
+skip$ -- 68
 stack$ -- 0
 substring$ -- 0
-swap$ -- 19
+swap$ -- 12
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
-warning$ -- 0
-while$ -- 19
-width$ -- 21
-write$ -- 192
+warning$ -- 24
+while$ -- 12
+width$ -- 22
+write$ -- 170
+(There were 8 error messages)
