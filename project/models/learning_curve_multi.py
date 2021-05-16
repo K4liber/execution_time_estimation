@@ -123,7 +123,7 @@ if __name__ == '__main__':
         svr_y_plot_sorted = svr_model_error[svr_index_sorted]
         app_id_to_axes[app_id].plot(svr_x_plot_sorted, svr_y_plot_sorted, label=f'svr', color='y')
 
-        knn_model_scheme = ModelDetails(app_name, 1.0, False, False)
+        knn_model_scheme = ModelDetails(app_name, 1.0, True, False)
         knn_data_points = []
         knn_model_error = []
         df, df_err = get_data_frame(results_filepath, app_id)
