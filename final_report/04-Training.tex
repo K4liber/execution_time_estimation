@@ -1,0 +1,131 @@
+%!TEX root = main.tex
+\section{Training and validation}
+\begin{figure*}[!t]
+	\centering
+	\begin{minipage}{0.85\linewidth}
+		\includegraphics[width=1.0\textwidth]{learning_curve_multi}
+	\end{minipage}
+	\caption{Learning curve per module.}
+	\label{fig:curve}
+\end{figure*}
+
+\begin{figure*}[!t]
+	\centering
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{svr_xgb_grid_search_surf}
+	\end{minipage}
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{knn_xgb_grid_search_surf}
+	\end{minipage}
+	\caption{Regression surfaces for \textit{xgb\_grid\_search} module.}
+	\label{fig:xgb_surf}
+\end{figure*}
+
+\begin{figure*}[!t]
+	\centering
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{svr_images_merger_surf}
+	\end{minipage}
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{knn_images_merger_surf}
+	\end{minipage}
+	\caption{Regression surfaces for \textit{images\_merger} module.}
+	\label{fig:images_merger_surf}
+\end{figure*}
+
+\begin{figure*}[!t]
+	\centering
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{svr_video_splitter_surf}
+	\end{minipage}
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{knn_video_splitter_surf}
+	\end{minipage}
+	\caption{Regression surfaces for \textit{video\_splitter} module.}
+	\label{fig:video_splitter_surf}
+\end{figure*}
+
+\begin{figure*}[!t]
+	\centering
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{svr_face_recogniser_surf}
+	\end{minipage}
+	\begin{minipage}{0.45\linewidth}
+		\includegraphics[width=1.0\textwidth]{knn_face_recogniser_surf}
+	\end{minipage}
+	\caption{Regression surfaces for \textit{face\_recogniser} module.}
+	\label{fig:face_recogniser_surf}
+\end{figure*}
+
+
+\subsection{Training}
+The training pipeline for each module contains the following steps:
+\begin{enumerate}
+	\item Having the 80 data points, we divide them into training and test data sets with 1:3 proportion. We freeze the test data set to use it only for the validation of final models.
+	\item Standardization of a data set is a common requirement for many machine learning estimators: they might behave badly if the individual features do not more or less look like standard normally distributed data (e.g. Gaussian with 0 mean and unit variance)\cite{scaler}. We scale each column (feature) of the data set using the following formula:
+	\[ \vec{x}_{f}^{'} = \frac{\vec{x}_{f}-\mu_f}{\sigma_f} \textnormal{, where:}\]
+	\begin{itemize}
+		\item $ \vec{x}_{f} $ - data set column \textit{f},
+		\item $ \mu_f $ - mean of the column \textit{f},
+		\item $ \sigma_f $ - standard deviation of the column \textit{f}.
+	\end{itemize}
+	\item Each algorithm have a few parameters that should be chosen wisely to achieve better results. It is hard to predict the best value of a continuous parameter. What we did is an exhaustive search over specified parameter values for an estimator from the given possible values. For each combination of the parameter values we validate the model using 5-fold cross validation on the training data set. It is called a \textit{grid search}\cite{grid_search}.
+	\item Finally, we retrained our model using the entire training data set and the parameters that have been found in the previous step.
+\end{enumerate}
+
+The previous section contains the description of model parameters. The parameters grid for the \textit{SVR} algorithm is listed below:
+\begin{lstlisting}[language=json,firstnumber=1]
+'gamma': [0.0001, 0.0002, 0.0004, 0.0008, 
+0.0016, 0.0032, 0.0064, 0.0128], 
+'epsilon': [1e-06, 2e-06, 4e-06, 8e-06, 
+1.6e-05, 3.2e-05, 6.4e-05, 0.000128, 
+0.000256, 0.000512, 0.001024], 
+'C': [1000.0, 2000.0, 4000.0, 8000.0,
+16000.0, 32000.0, 64000.0, 128000.0, 
+256000.0, 512000.0, 1024000.0, 2048000.0]
+	\end{lstlisting}
+	
+The following listening contains the chosen parameters grid for the \textit{KNN} algorithm:
+\begin{lstlisting}[language=json,firstnumber=1]
+'n_neighbors': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 
+'weights': ['uniform', 'distance'], 
+'p': [1, 2]
+\end{lstlisting}
+
+The best model parameters based on the coefficient of determination \( R^2 \) of the prediction are presented in Table~\ref{tab:final_results}. 
+
+We assume that each BalticLSC module will be executed many times. These assumptions induce many training data points for each model. However, there will be diversities between the number of executions per module. Moreover, the run-time of new modules cannot be predicted due to the lack of a training set. To investigate how the number of training samples affects the relative error of the regression, we calculated the learning curve. The results are shown in Figure~\ref{fig:curve}. In line with what could be expected, the relative error decreases (with some hesitations) as the amount of training data increases for each module.
+
+\begin{table*}[!t]
+	\centering
+	\caption{\label{tab:final_results}The final results.}
+	\begin{minipage}{1\linewidth}
+		{\footnotesize
+			\begin{tabular}{|c| c >{\columncolor[gray]{0.9}}c| c >{\columncolor[gray]{0.9}}c|} 
+				\hline
+				Algorithm: & SVR & & KNN & \\
+				\hline
+				& best params & relative error [\%] & best params & relative error [\%] \\ [0.5ex] 
+				\hline\hline
+				\textit{video\_splitter} & \textit{C}: 512e+03, \textit{$\gamma$}: 8e-04, \textit{$\epsilon$}: 3.2e-05 & 46.9 & \textit{n}: 2, \textit{weights}: \textit{distance}, \textit{p}: 1 & 39.3 \\ 
+				\hline
+				\textit{face\_recogniser} & \textit{C}: 64e+03, \textit{$\gamma$}: 3.2e-05, \textit{$\epsilon$}: 8e-06 & 16.7 & \textit{n}: 1, \textit{weights}: \textit{uniform}, \textit{p}: 1 & 31.4 \\
+				\hline
+				\textit{xgb\_grid\_search} & \textit{C}: 256000.0, \textit{$\gamma$}: 1e-04, \textit{$\epsilon$}: 2e-06 & 44.7 & \textit{n}: 2, \textit{weights}: \textit{uniform}, \textit{p}: 1 & 49.3 \\
+				\hline
+				\textit{images\_merger} & \textit{C}: 512e+03, \textit{$\gamma$}: 1.6e-03, \textit{$\epsilon$}: 8e-06 & 40.6 & \textit{n}: 2, \textit{weights}: \textit{distance}, \textit{p}: 1 & 41.7 \\
+				\hline
+			\end{tabular}
+		}
+	\end{minipage}
+\end{table*}	
+
+\subsection{Validation}
+Since our models were trained only on the training data sets, we had the possibility to use test data set as a completely new data to validate our models. The separated test data guarantee that the validation results will not be distorted. Training with the cross-validation secures the model from over-fitting and make it able to generalize more. Table~\ref{tab:final_results} shows the final results of estimation error for each module and algorithm. The error was calculated using the belowe formula:
+\[ \textit{error} = \frac{1}{N}\sum_i^N \frac{|y_i-\bar{y_i}|}{y_i}  \textnormal{,}\]
+where: \newline
+$ N  \textnormal{ - number of test data point = 20,} $\newline
+$ y  \textnormal{ - original run-time,} $ \newline
+$ \bar{y_i}  \textnormal{ - predicted run-time.} $
+
+The Figures from~\ref{fig:xgb_surf} to~\ref{fig:face_recogniser_surf} shows surfaces of regression for each module and algorithm. One can see that the \textit{KNN} algorithm created the more irregular surface than \textit{SVR} which gives a plus in the form of better generalization for the latter. The axes are not labeled on the plots to make the figures more transparent. The z-axis represents the run-time. The one on the left side of the floor is the overall size of the input data. The axis on the right side of the floor represents the number of CPU fractions. Besides the surface, the figures show training and test data points as accordingly green and red dots. The input data set was spitted randomly for each module in the same way for each algorithm. One can see that the data points for the \textit{face\_recogniser} module have a more uniform distribution for the overall size feature. It leads to a more smooth regression surface and smaller relative error (see Table~\ref{tab:final_results}).

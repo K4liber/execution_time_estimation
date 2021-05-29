@@ -21,8 +21,14 @@
 \usepackage{url}
 \usepackage{msc}
 \usepackage{xcolor,colortbl}
-\usepackage{hyperref}
 \usepackage{float}
+
+\newcommand{\subtitle}[1]{%
+  \posttitle{%
+    \par\end{center}
+    \begin{center}\large#1\end{center}
+    \vskip0.5em}%
+}
 
 \makeatletter
 % \getcountref extracts the raw reference and
@@ -129,9 +135,9 @@
 
 \begin{document}
 
-\title{
+\font\myfont=cmr12 at 22pt
+\title{\myfont
 	Run-time estimation for data processing tasks \\
-	\large Statistic under AI and its application to engineering sciences
 }
 
 \author{%
@@ -162,12 +168,7 @@ multicore computing, data processing, analysis of algorithms, run-time estimatio
 \input{05-Conclusions.tex}
 
 
-\section*{Thanks}
-
-Thanks for the help and support ...
-%Comenta la línea \nocite para que sólo se incluyan en las referencias
-%las entradas que esté referenciadas en el texto con \cite{}
-\nocite{*}
+%\nocite{*}
 \bibliographystyle{Jornadas}
 \bibliography{biblio}
 
