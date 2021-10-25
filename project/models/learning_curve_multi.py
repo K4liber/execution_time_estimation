@@ -202,8 +202,8 @@ if __name__ == '__main__':
     fig.add_subplot(111, frameon=False)
     # hide tick and tick label of the big axis
     plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
-    plt.xlabel('training samples quantity')
+    plt.xlabel('number of training samples')
     plt.ylabel('regression relative error [%]')
     plt.tight_layout()
     fig_path = os.path.join(ROOT_DIR, 'models', 'figures', 'learning_curve_multi' + '.png')
-    plt.savefig(fig_path, bbox_inches='tight', pad_inches=0)
+    plt.savefig(fig_path, bbox_inches='tight', pad_inches=0.05)

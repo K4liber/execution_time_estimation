@@ -70,10 +70,10 @@ if __name__ == '__main__':
         x = scaler.transform(x)
         # Fit transform
         model_pca.fit_transform(x)
-        plot_features_impact(
+        features_impact_bar(
             model_pca, ax,
             tuple([str(col) for col in df.columns if col != SHORT_NAME[DataFrameColumns.EXECUTION_TIME]]))
         ax.set_title(app_id_to_name[app_id])
         ax.legend()
 
-    plt.savefig(figure_filepath, bbox_inches='tight', pad_inches=0)
+    plt.savefig(figure_filepath, bbox_inches='tight', pad_inches=0.05)

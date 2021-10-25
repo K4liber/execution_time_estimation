@@ -4,11 +4,11 @@ from os.path import join
 import sys
 
 import matplotlib.pyplot as plt
-import matplotlib
 import numpy as np
 
 sys.path.append('.')
 
+from project.tests.algorithms.utils import arrowed_spines
 from project.models.grid_search import grid_search
 from project.models.svr.algorithm import AlgSVR
 from project.definitions import ROOT_DIR
@@ -23,9 +23,10 @@ def main():
     x = [30*i/float(data_length) for i in range(data_length)]
     y = [0.1*math.exp(0.1*i) for i in x]
     # Plot signal
-    fig = matplotlib.pyplot.gcf()
+    fig, ax = plt.subplots()
     fig.set_size_inches(4.5, 3.5)
-    plt.plot(x, y, label='signal = ~exp(x)', color='black')
+    arrowed_spines(ax)
+    plt.plot(x, y, label='f(x) ~ exp(x)', color='black')
     x_data_point = x[:int(len(x)*train_frac)]
     y_data_points = [i + random.uniform(-random_max, random_max) for i in y[:int(len(y)*train_frac)]]
     algorithm = AlgSVR.get()
@@ -37,13 +38,13 @@ def main():
     x_train = np.array(x_data_point).reshape((-1, 1))
     model.fit(x_train, y_data_points)
     y_predict = model.predict(np.array(x).reshape((-1, 1)))
-    plt.scatter(x_data_point, y_data_points, alpha=0.8, label='training points (signal + noise)', c='g')
-    plt.scatter(x, y_predict, alpha=0.5, label='svr predictions', c='y')
+    plt.scatter(x_data_point, y_data_points, alpha=1, label='training points (signal + noise)', c='g', s=70, marker="d")
+    plt.scatter(x, y_predict, alpha=1, label='svr predictions', c='y', s=10)
     plt.ylim([-0.1, 2.5])
     plt.xlim([0, 32])
     plt.legend(loc='upper left')
     plt.xlabel('x')
-    plt.ylabel('response variable')
+    plt.ylabel('f(x)')
     plt.tick_params(
         axis='both',  # changes apply to the x-axis
         which='both',  # both major and minor ticks are affected
@@ -56,7 +57,7 @@ def main():
         labelright=False,
         labelleft=False
     )
-    plt.savefig(figure_filepath, bbox_inches='tight', pad_inches=0)
+    plt.savefig(figure_filepath, bbox_inches='tight', pad_inches=0.02)
 
 
 if __name__ == '__main__':

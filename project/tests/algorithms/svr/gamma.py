@@ -4,11 +4,11 @@ from os.path import join
 import sys
 
 import matplotlib.pyplot as plt
-import matplotlib
 import numpy as np
 
 sys.path.append('.')
 
+from project.tests.algorithms.utils import arrowed_spines
 from project.utils.logger import logger
 from project.models.grid_search import grid_search
 from project.models.svr.algorithm import AlgSVR
@@ -23,8 +23,9 @@ def main():
     x = [3*math.pi*i/float(data_length) for i in range(data_length)]
     y = [5 + 2*i + 6*random.uniform(-random_max, random_max) + 4*math.sin(1.5*i) for i in x]
     # Plot signal
-    fig = matplotlib.pyplot.gcf()
+    fig, ax = plt.subplots()
     fig.set_size_inches(4.5, 3.5)
+    arrowed_spines(ax)
     x_data_point = x
     y_data_points = [i + random.uniform(-random_max, random_max) for i in y]
     param_grid = AlgSVR.get_params_grid()
@@ -52,9 +53,9 @@ def main():
     plt.plot(x, y_predict, 'r-', alpha=1, label='gamma = 0.1')
     plt.plot(x, y_predict_2, 'b--', alpha=1, label='gamma = 10')
     plt.scatter(x_data_point, y_data_points, alpha=0.7, label='training points', c='g')
-    plt.legend(loc='upper left')
-    plt.xlabel('predictor variable')
-    plt.ylabel('response variable')
+    plt.legend(loc=(0.5, 0.1))
+    plt.xlabel('x')
+    plt.ylabel('f(x)')
     plt.tick_params(
         axis='both',  # changes apply to the x-axis
         which='both',  # both major and minor ticks are affected
@@ -67,9 +68,8 @@ def main():
         labelright=False,
         labelleft=False
     )
-    plt.savefig(figure_filepath, bbox_inches='tight', pad_inches=0)
+    plt.savefig(figure_filepath, bbox_inches='tight', pad_inches=0.02)
 
 
 if __name__ == '__main__':
-    print('knn test')
     main()
