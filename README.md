@@ -27,6 +27,8 @@ Here you can find the full data set from all apps executions with all available 
 1. `svr`
 2. `xgb`
 3. `knn`
+4. `pol`
+
 ###
 1. Install requirements:
    ```
@@ -34,15 +36,15 @@ Here you can find the full data set from all apps executions with all available 
    ```
 1. Grid search:
     ```
-    python project/models/grid_search.py --app_name APP_NAME --alg ALGORITHM_NAME --frac 10 <--scale> <--reduced>
+    python project/models/grid_search.py --app_name APP_NAME --alg ALGORITHM_NAME --frac 9
     ```
-   use `--scale` flag to scale the data  
-   use `--reduced` flag to use onlu `mCPUs` and `overall_size` features  
 2. Plot learning curve:
    ```
-    python project/models/learning_curve.py --app_name APP_NAME --alg ALGORITHM_NAME <--scale> <--reduced>
+    python project/models/learning_curve.py --app_name APP_NAME --alg ALGORITHM_NAME
    ```
 3. Plot model surface:
     ```
     python project/models/plot_surface.py --app_name APP_NAME --alg ALGORITHM_NAME <--scale> <--reduced>
     ```
+   use `--scale` flag to scale the data  
+   use `--reduced` flag to use onlu `mCPUs` and `overall_size` features  

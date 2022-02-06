@@ -47,13 +47,14 @@ FEATURE_NAMES = [
 
 
 def get_data_frame(results_filepath: str, app_id: Union[int, None] = None,
-                   random_state: int = 0, app_id_left: bool = False, short_names: bool = False) \
+                   random_state: int = 0, app_id_left: bool = False, short_names: bool = False,
+                   header: Optional[int] = 0) \
                    -> Tuple[Union[None, pd.DataFrame], Union[None, ValueError]]:
     if not isfile(results_filepath):
         return None, ValueError(f'"{results_filepath}" is not a file')
 
     try:
-        df = pd.read_csv(results_filepath, delimiter=',', header=0, names=[
+        df = pd.read_csv(results_filepath, delimiter=',', header=header, names=[
             DataFrameColumns.APP_ID if not short_names else SHORT_NAME[DataFrameColumns.APP_ID],
             DataFrameColumns.CPUS if not short_names else SHORT_NAME[DataFrameColumns.CPUS],
             DataFrameColumns.OVERALL_SIZE if not short_names else SHORT_NAME[DataFrameColumns.OVERALL_SIZE],

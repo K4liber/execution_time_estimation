@@ -1,26 +1,25 @@
 import argparse
 import os
-from os.path import join
-from os import getenv
 import sys
+from os import getenv
+from os.path import join
 
 import joblib
-import pandas as pd
-import matplotlib.pyplot as plt
-import tkinter
 import matplotlib
+import matplotlib.pyplot as plt
+import pandas as pd
+
 matplotlib.use('TkAgg')
 
 sys.path.append('.')
 
-from project.models.details import get_model_filepath, ModelDetails, get_model_name
+from project.models.details import get_model_filepath, ModelDetails
 from project.models.scale import init_scale, transform_x, transform_y, inverse_transform_y
 from project.utils.app_ids import app_name_to_id
 from project.utils.logger import logger
 from project.definitions import ROOT_DIR
 from project.models.data import (
     get_data_frame,
-    get_training_test_split,
     DataFrameColumns,
 )
 
@@ -95,6 +94,7 @@ if __name__ == "__main__":
         raise ValueError(err)
 
     model = joblib.load(model_filepath)
+    logger.info(f'Model details: {str(model)}')
     z_svr = model.predict(x_scaled)
     z_svr_test = model.predict(x_test_scaled)
     # ML end
@@ -103,9 +103,10 @@ if __name__ == "__main__":
     y_train_list = list(y_train[DataFrameColumns.EXECUTION_TIME])
     errors_rel = []
     errors = []
+    y_train_min = min(y_train_list)
 
     for index, z_pred in enumerate(z_svr_test_inverse):
-        z_pred = z_pred if z_pred > 0 else min(y_train_list)
+        z_pred = z_pred if z_pred > 0 else y_train_min
         z_origin = y_test_list[index]
         error = abs(z_pred - z_origin)
         errors.append(error)
@@ -126,9 +127,10 @@ if __name__ == "__main__":
     logger.info('avg error relative [percentage] = %s' % str(sum(errors_rel) / len(errors_rel)))
     # Plot prediction surface
     z_svr_inverse = inverse_transform_y(z_svr)
+    z_plot = [z if z > 0 else y_train_min for z in z_svr_inverse]
     x_plot = x[DataFrameColumns.OVERALL_SIZE].to_numpy()
     y_plot = x[DataFrameColumns.CPUS].to_numpy()
-    ax.plot_trisurf(x_plot, y_plot, z_svr_inverse, alpha=0.5)
+    ax.plot_trisurf(x_plot, y_plot, z_plot, alpha=0.5)
     plt.margins()
     plt.gcf().autofmt_xdate()
     ax.legend()
