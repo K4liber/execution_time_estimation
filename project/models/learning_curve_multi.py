@@ -26,7 +26,7 @@ def learning_curve_multi():
 
     for ax in fig.get_axes():
         ax.label_outer()
-        ax.set_ylim(0, 200)
+        ax.set_ylim(0, 150)
         ax.legend()
 
     fig.add_subplot(111, frameon=False)

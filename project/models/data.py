@@ -5,6 +5,7 @@ import sys
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.utils import shuffle
 
 sys.path.append('.')
 
@@ -34,7 +35,7 @@ SHORT_NAME = {
 
 
 class Const:
-    TRAINING_SAMPLES = 60
+    TRAINING_SAMPLES = 40
 
 
 FEATURE_NAMES = [
@@ -115,7 +116,8 @@ if __name__ == '__main__':
     _results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
 
     for index, _app_id in enumerate(app_name_to_id.values()):
-        df, df_err = get_data_frame(_results_filepath, _app_id, 0, True)
+        df, _ = get_data_frame(_results_filepath, _app_id, 0, True)
+        df = shuffle(df, random_state=12)
 
         if index == 0:
             df_train = df.iloc[:Const.TRAINING_SAMPLES, :]
