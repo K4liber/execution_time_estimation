@@ -9,6 +9,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import tkinter
 import matplotlib
+
+from project.models.common import get_errors
+
 matplotlib.use('TkAgg')
 
 sys.path.append('.')
@@ -113,18 +116,8 @@ if __name__ == "__main__":
     z_svr_test_inverse = inverse_transform_y(z_svr_test)
     y_test_list = list(y_test[DataFrameColumns.EXECUTION_TIME])
     y_train_list = list(y_train[DataFrameColumns.EXECUTION_TIME])
-    errors_rel = []
-    errors = []
     predictions = z_svr_test_inverse if args.alg == 'svr' else z_knn_test
-
-    for index, z_pred in enumerate(predictions):
-        z_pred = z_pred if z_pred > 0 else min(y_train_list)
-        z_origin = y_test_list[index]
-        error = abs(z_pred - z_origin)
-        errors.append(error)
-        error_rel = error * 100.0 / z_origin
-        errors_rel.append(error_rel)
-
+    errors, errors_rel = get_errors(y_test_list, predictions)
     logger.info('############### SUMMARY ##################')
     logger.info('avg time [s] = %s' % str(sum(y_test_list) / len(y_test_list)))
     logger.info('avg error [s] = %s' % str(sum(errors) / len(errors)))
