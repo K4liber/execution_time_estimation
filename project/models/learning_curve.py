@@ -24,7 +24,7 @@ def learning_curve(application_name: str, algorithm_name: str, model_scheme: Mod
     plt.ylabel('regression relative error [%]')
     plt.title(f'Learning curve ({algorithm_name}, {application_name})')
     ax.label_outer()
-    ax.set_ylim(0, 200)
+    ax.set_ylim(0, 150)
     ax.legend()
     fig_path = os.path.join(ROOT_DIR, 'models', algorithm_name, 'figures', get_model_name(model_scheme) + '.png')
     plt.savefig(fig_path)

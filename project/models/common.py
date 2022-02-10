@@ -52,13 +52,16 @@ def plot_app_learning_curve(application_name: str, algorithm_name: str, ax):
     data_points = []
     model_error = []
 
-    for fraction in [round(1.0 - x / 10, 1) for x in range(9)]:
+    for fraction in [round(1.0 - x / 10, 1) for x in range(10)]:
         model_details = get_model_details_for_algorithm(application_name, algorithm_name, fraction)
         model_file_name = get_model_file_name(model_details, application_name, fraction)
+        model_file_path = os.path.join(algorithm_dir, model_file_name)
+
+        if not os.path.isfile(model_file_path):
+            continue
+
         logger.info(f'validating model "{model_file_name}"')
-        errors_rel = []
-        errors = []
-        model = joblib.load(os.path.join(algorithm_dir, model_file_name))
+        model = joblib.load(model_file_path)
         x, y = get_x_y(results_test_filepath, app_id, model_details.reduced)
 
         if model_details.scale:
@@ -80,21 +83,7 @@ def plot_app_learning_curve(application_name: str, algorithm_name: str, ax):
         y_predicted_scaled = model.predict(x_scaled)
         y_predicted = inverse_transform_y(y_predicted_scaled)
         y_list = list(y[DataFrameColumns.EXECUTION_TIME])
-
-        for index, y_pred in enumerate(y_predicted):
-            y_pred = y_pred if y_pred > 0 else min(y_list)
-            y_origin = y_list[index]
-            error = abs(y_pred - y_origin)
-            errors.append(error)
-            error_rel = error * 100.0 / y_origin
-            errors_rel.append(error_rel)
-
-        if os.getenv("DEBUG") == "true":
-            logger.info('pred: %s' % y_pred)
-            logger.info('origin: %s' % y_origin)
-            logger.info('error [s] = %s' % error)
-            logger.info('error relative [percentage] = %s' % error_rel)
-
+        errors, errors_rel = get_errors(y_list, y_predicted)
         logger.info('############### SUMMARY ##################')
         logger.info(model.get_params())
         logger.info(f'training data fraction: {fraction}')
@@ -123,13 +112,14 @@ def get_model_file_name(model_details: ModelDetails, application_name: str, frac
 def get_errors(y_real: List[float], y_predicted: List[float]) -> Tuple[List[float], List[float]]:
     errors = []
     errors_rel = []
+    avg_real = sum(y_real) / len(y_real)
 
     for index, y_pred in enumerate(y_predicted):
         y_pred = y_pred if y_pred > 0 else min(y_real)  # Execution time cannot be lower than zero
         y_origin = y_real[index]
         error = abs(y_pred - y_origin)
         errors.append(error)
-        error_rel = error * 100.0 / y_origin
+        error_rel = error * 100.0 / avg_real
         errors_rel.append(error_rel)
 
         if os.getenv("DEBUG") == "true":
