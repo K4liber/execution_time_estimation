@@ -27,26 +27,6 @@ class ModelDetails:
     def reduced(self):
         return self._reduced
 
-    def the_same_run(self, comparing_details) -> bool:
-        if self.scale == comparing_details.scale and \
-                self.reduced == comparing_details.reduced and \
-                self.app_name == comparing_details.app_name:
-            return True
-        else:
-            return False
-
-
-def get_model_details(filename: str) -> (Union[ModelDetails, None], Union[ValueError, None]):
-    try:
-        filename_split = '.'.join(filename.split('.')[:-1]).split('_')
-        app_name = '_'.join(filename_split[:-3])
-        frac = float(filename_split[-3])
-        scale = filename_split[-2] == '1'
-        reduced = filename_split[-1] == '1'
-        return ModelDetails(app_name, frac, scale, reduced), None
-    except BaseException as err:
-        return None, err
-
 
 def get_model_name(model_details: ModelDetails) -> str:
     model_name = f'{model_details.app_name}_{round(model_details.frac, 1)}'

@@ -44,6 +44,24 @@ FEATURE_NAMES = [
     DataFrameColumns.ELEMENT_AVG_SIZE,
     DataFrameColumns.ELEMENT_MAX_SIZE,
 ]
+REDUCED_FEATURES = [
+    DataFrameColumns.CPUS,
+    DataFrameColumns.OVERALL_SIZE
+]
+
+
+def get_x_y(results_filepath: str, app_id: Union[int, None] = None, reduced: bool = False) -> Tuple[str, str]:
+    df, df_err = get_data_frame(results_filepath, app_id)
+
+    if df_err is not None:
+        raise ValueError(f'data frame load err: {df_err}')
+
+    if reduced:
+        x = df[REDUCED_FEATURES]
+    else:
+        x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
+
+    return x, df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
 
 
 def get_data_frame(results_filepath: str, app_id: Union[int, None] = None,
@@ -94,10 +112,10 @@ def get_training_test_split(df: pd.DataFrame, train_fraction: float = 1.0, colum
 
 
 if __name__ == '__main__':
-    results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
+    _results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
 
-    for index, app_id in enumerate(app_name_to_id.values()):
-        df, df_err = get_data_frame(results_filepath, app_id, 0, True)
+    for index, _app_id in enumerate(app_name_to_id.values()):
+        df, df_err = get_data_frame(_results_filepath, _app_id, 0, True)
 
         if index == 0:
             df_train = df.iloc[:Const.TRAINING_SAMPLES, :]

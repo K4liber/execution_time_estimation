@@ -2,7 +2,7 @@ from os.path import join
 from unittest import TestCase
 
 from project.definitions import ROOT_DIR
-from project.models.data import get_data_frame, DataFrameColumns
+from project.models.data import get_data_frame
 
 
 class TestDataFrame(TestCase):
