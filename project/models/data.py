@@ -4,6 +4,7 @@ import sys
 
 import pandas as pd
 import numpy as np
+from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 
@@ -35,7 +36,7 @@ SHORT_NAME = {
 
 
 class Const:
-    TRAINING_SAMPLES = 40
+    TRAINING_SAMPLES = 120
 
 
 FEATURE_NAMES = [
@@ -51,7 +52,12 @@ REDUCED_FEATURES = [
 ]
 
 
-def get_x_y(results_filepath: str, app_id: Union[int, None] = None, reduced: bool = False) -> Tuple[str, str]:
+def get_x_y(
+        results_filepath: str,
+        app_id: Union[int, None] = None,
+        reduced: bool = False
+) -> Tuple[DataFrame, DataFrame]:
+
     df, df_err = get_data_frame(results_filepath, app_id)
 
     if df_err is not None:
@@ -117,7 +123,7 @@ if __name__ == '__main__':
 
     for index, _app_id in enumerate(app_name_to_id.values()):
         df, _ = get_data_frame(_results_filepath, _app_id, 0, True)
-        df = shuffle(df, random_state=12)
+        df = shuffle(df, random_state=50)
 
         if index == 0:
             df_train = df.iloc[:Const.TRAINING_SAMPLES, :]

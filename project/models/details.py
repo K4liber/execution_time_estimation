@@ -1,31 +1,16 @@
 import os
+from dataclasses import dataclass
 from typing import Union
 
 from project.definitions import ROOT_DIR
 
 
+@dataclass
 class ModelDetails:
-    def __init__(self, app_name: str, frac: float, scale: bool, reduced: bool):
-        self._app_name = app_name
-        self._frac = frac
-        self._scale = scale
-        self._reduced = reduced
-
-    @property
-    def app_name(self):
-        return self._app_name
-
-    @property
-    def frac(self):
-        return self._frac
-
-    @property
-    def scale(self):
-        return self._scale
-
-    @property
-    def reduced(self):
-        return self._reduced
+    app_name: str
+    frac: float
+    scale: bool
+    reduced: bool
 
 
 def get_model_name(model_details: ModelDetails) -> str:

@@ -13,23 +13,20 @@ matplotlib.use('TkAgg')
 
 sys.path.append('.')
 
-from project.models.details import get_model_filepath, ModelDetails
+from project.models.common import get_model_details_for_algorithm
+from project.models.details import get_model_filepath
 from project.models.scale import init_scale, transform_x, transform_y, inverse_transform_y
 from project.utils.app_ids import app_name_to_id
 from project.utils.logger import logger
 from project.definitions import ROOT_DIR
 from project.models.data import (
-    get_data_frame,
-    DataFrameColumns,
+    DataFrameColumns, get_x_y,
 )
 
 parser = argparse.ArgumentParser(description='Model training and validation.')
 parser.add_argument('--app_name', required=True, type=str, help='app name')
 parser.add_argument('--alg', required=True, type=str, help='algorithm')
 parser.add_argument('--frac', required=False, default=1.0, type=float, help='number of fractions')
-parser.add_argument('--scale', action=argparse.BooleanOptionalAction, help='scale the data before learning')
-parser.add_argument('--reduced', action=argparse.BooleanOptionalAction,
-                    help='use only "CPUs" and "OVERALL_SIZE" features')
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -37,32 +34,19 @@ if __name__ == "__main__":
     app_id = app_name_to_id.get(args.app_name, None)
 
     if app_id is None:
-        raise ValueError(f'missing app "{args.app_name}" from app map={str(app_name_to_id)}')
+        raise ValueError(
+            f'missing app "{args.app_name}" from app map={app_name_to_id}'
+        )
 
     results_filepath = join(ROOT_DIR, '..', 'execution_results/results.csv')
     results_test_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_test.csv')
     results_train_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_train.csv')
-    df, df_err = get_data_frame(results_filepath, app_id)
-    df_test, df_test_err = get_data_frame(results_test_filepath, app_id)
-    df_train, df_train_err = get_data_frame(results_train_filepath, app_id)
+    x, y = get_x_y(results_filepath, app_id)
+    x_test, y_test = get_x_y(results_test_filepath, app_id)
+    x_train, y_train = get_x_y(results_train_filepath, app_id)
+    model_details = get_model_details_for_algorithm(args.app_name, args.alg)
 
-    if df_err is not None or df_test_err is not None or df_train_err is not None:
-        raise ValueError(f'data frame load err')
-
-    if args.reduced:
-        x = df[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
-        x_test = df_test[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
-        x_train = df_train[DataFrameColumns.CPUS, DataFrameColumns.OVERALL_SIZE]
-    else:
-        x = df.loc[:, df.columns != DataFrameColumns.EXECUTION_TIME]
-        x_test = df_test.loc[:, df_test.columns != DataFrameColumns.EXECUTION_TIME]
-        x_train = df_train.loc[:, df_train.columns != DataFrameColumns.EXECUTION_TIME]
-
-    y = df.loc[:, df.columns == DataFrameColumns.EXECUTION_TIME]
-    y_test = df_test.loc[:, df_test.columns == DataFrameColumns.EXECUTION_TIME]
-    y_train = df_train.loc[:, df_train.columns == DataFrameColumns.EXECUTION_TIME]
-
-    if args.scale:
+    if model_details.scale:
         init_scale(x, y)
 
     x_test_scaled = transform_x(x_test)
@@ -87,14 +71,13 @@ if __name__ == "__main__":
     ax.scatter(x_plot_train, y_plot_train, z_plot_train, c='#2ca02c', alpha=1, label='training points')
     ax.scatter(x_plot_test, y_plot_test, z_plot_test, label='test points', c='#cc0000', alpha=1)
     # Load model
-    model_details = ModelDetails(args.app_name, args.frac, args.scale, args.reduced)
     model_filepath, err = get_model_filepath(args.alg, model_details)
 
     if err is not None:
         raise ValueError(err)
 
     model = joblib.load(model_filepath)
-    logger.info(f'Model details: {str(model)}')
+    logger.info(f'Model details: {model}')
     z_svr = model.predict(x_scaled)
     z_svr_test = model.predict(x_test_scaled)
     # ML end

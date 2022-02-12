@@ -19,7 +19,7 @@ _algorithm_to_color = {
 
 
 def is_reduced() -> bool:
-    return os.getenv('REDUCED') is not None
+    return os.getenv('REDUCED') == "true"
 
 
 def get_model_details_for_algorithm(application_name: str, algorithm: str, fraction: float = 1.0) -> ModelDetails:

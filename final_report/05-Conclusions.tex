@@ -1,8 +1,0 @@
-%!TEX root = main.tex
-\section{Conclusions}
-
-As the \textit{PCA} analysis shows (see the Figure~\ref{fig:pca} and its description), the input data for our models have approximately three independent components that contain all variations of the data. This means that by using these components, we will reduce the model to a three-dimensional feature space only. We did not decide to use reduced space, but one can use the reduction to the more complex case because each model can be extended with additional features based on the specific module. For example, there could be some additional parameters required to run a module, and the parameters have an impact on the execution time. These parameters should be included in the set of input features for the module`s model.
-
-Analyzing only the final results, one can see that the used algorithms give relatively similar results with a bit of advantage for the \textit{SVR} (average error of 38.0\%, comparing to 40.4\% for the \textit{KNN}). The more critical characteristic which makes the \textit{SVR} model more promising in use is the possibility to estimate the run-time in the more general way for the inputs out from the training range (see Figure~\ref{fig:out_of_range} and its description). 
-
-In the subject of estimating the execution time of the whole application, the work that was done is not enough. It has to be noticed that we must also predict the input data properties for the next modules in the queue because, at the start, we only know the input data properties for the starting module of the application. This is true for applications consisting of more than one module. It will be implemented in further work to make the possibility to estimate the time of whole application execution.
