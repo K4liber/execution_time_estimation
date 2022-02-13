@@ -3,7 +3,6 @@ import copy
 import multiprocessing
 import os
 import sys
-from os import getenv
 from os.path import join
 from typing import List, Dict, Type
 
@@ -28,8 +27,6 @@ from project.models.data import (
     DataFrameColumns, get_x_y,
 )
 
-scale_x = None
-scale_y = None
 parser = argparse.ArgumentParser(description='Model training and validation.')
 parser.add_argument('--app_name', required=True, type=str, help='app name')
 parser.add_argument('--alg', required=True, type=str, help='algorithm')
@@ -99,13 +96,13 @@ def run_grid_search_all_fractions(application_name: str, algorithm_name: str, fr
         )
 
     results_train_filepath = join(ROOT_DIR, '..', 'execution_results/results_train.csv')
-    x, y = get_x_y(results_train_filepath, app_id, model_details.reduced)
+    x_train, y_train = get_x_y(results_train_filepath, app_id, model_details.reduced)
 
     if model_details.scale:
-        init_scale(x, y)
+        init_scale(x_train, y_train)
 
-    x_scaled = transform_x(x)
-    y_scaled = transform_y(y)
+    x_scaled = transform_x(x_train)
+    y_scaled = transform_y(y_train)
     grid_search_args = [
         (fraction, algorithm_name, application_name, copy.deepcopy(x_scaled), copy.deepcopy(y_scaled),
          copy.deepcopy(list(y[DataFrameColumns.EXECUTION_TIME])))

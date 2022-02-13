@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 sys.path.append('.')
 
 from project.utils.app_ids import app_name_to_id, AppID
-from project.definitions import ROOT_DIR
-from project.models.common import plot_app_learning_curve, is_reduced
+from project.definitions import ROOT_DIR, is_reduced
+from project.models.common import plot_app_learning_curve
 
 
 def learning_curve_multi():

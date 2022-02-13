@@ -4,7 +4,7 @@ from typing import List, Tuple
 import joblib
 import numpy as np
 
-from project.definitions import ROOT_DIR
+from project.definitions import ROOT_DIR, is_reduced
 from project.models.data import get_data_frame, DataFrameColumns, Const, get_x_y, REDUCED_FEATURES
 from project.models.details import ModelDetails
 from project.models.scale import init_scale, dismiss_scale, transform_x, inverse_transform_y
@@ -18,10 +18,6 @@ _algorithm_to_color = {
 }
 
 
-def is_reduced() -> bool:
-    return os.getenv('REDUCED') == "true"
-
-
 def get_model_details_for_algorithm(application_name: str, algorithm: str, fraction: float = 1.0) -> ModelDetails:
     algorithm_to_model_details = {
         'svr': ModelDetails(application_name, fraction, True, is_reduced()),
@@ -33,6 +29,20 @@ def get_model_details_for_algorithm(application_name: str, algorithm: str, fract
 
 def get_color(algorithm: str) -> str:
     return _algorithm_to_color[algorithm]
+
+
+def init_scale_from_train_set(model_details: ModelDetails, app_id: int):
+    results_train_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_train.csv')
+    df_train, df_err = get_data_frame(results_train_filepath, app_id)
+
+    if df_err is not None:
+        raise ValueError(f'data frame load err: {df_err}')
+
+    init_scale(
+        df_train.loc[:, df_train.columns != DataFrameColumns.EXECUTION_TIME if not model_details.reduced
+                        else REDUCED_FEATURES],
+        df_train.loc[:, df_train.columns == DataFrameColumns.EXECUTION_TIME]
+    )
 
 
 def plot_app_learning_curve(application_name: str, algorithm_name: str, ax):
@@ -62,27 +72,17 @@ def plot_app_learning_curve(application_name: str, algorithm_name: str, ax):
 
         logger.info(f'validating model "{model_file_name}"')
         model = joblib.load(model_file_path)
-        x, y = get_x_y(results_test_filepath, app_id, model_details.reduced)
+        x_test, y_test = get_x_y(results_test_filepath, app_id, model_details.reduced)
 
         if model_details.scale:
-            results_train_filepath = os.path.join(ROOT_DIR, '..', 'execution_results/results_train.csv')
-            df_train, df_err = get_data_frame(results_train_filepath, app_id)
-
-            if df_err is not None:
-                raise ValueError(f'data frame load err: {df_err}')
-
-            init_scale(
-                df_train.loc[:, df_train.columns != DataFrameColumns.EXECUTION_TIME if not model_details.reduced
-                                else REDUCED_FEATURES],
-                df_train.loc[:, df_train.columns == DataFrameColumns.EXECUTION_TIME]
-            )
+            init_scale_from_train_set(model_details, app_id)
         else:
             dismiss_scale()
 
-        x_scaled = transform_x(x)
+        x_scaled = transform_x(x_test)
         y_predicted_scaled = model.predict(x_scaled)
         y_predicted = inverse_transform_y(y_predicted_scaled)
-        y_list = list(y[DataFrameColumns.EXECUTION_TIME])
+        y_list = list(y_test[DataFrameColumns.EXECUTION_TIME])
         errors, errors_rel = get_errors(y_list, y_predicted)
         logger.info('############### SUMMARY ##################')
         logger.info(model.get_params())

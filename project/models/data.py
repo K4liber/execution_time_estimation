@@ -10,7 +10,7 @@ from sklearn.utils import shuffle
 
 sys.path.append('.')
 
-from project.definitions import ROOT_DIR
+from project.definitions import ROOT_DIR, is_reduced
 from project.utils.app_ids import app_name_to_id
 
 
@@ -55,7 +55,7 @@ REDUCED_FEATURES = [
 def get_x_y(
         results_filepath: str,
         app_id: Union[int, None] = None,
-        reduced: bool = False
+        reduced: bool = is_reduced()
 ) -> Tuple[DataFrame, DataFrame]:
 
     df, df_err = get_data_frame(results_filepath, app_id)
