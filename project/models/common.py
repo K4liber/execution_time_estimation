@@ -119,7 +119,7 @@ def get_errors(y_real: List[float], y_predicted: List[float]) -> Tuple[List[floa
         y_origin = y_real[index]
         error = abs(y_pred - y_origin)
         errors.append(error)
-        error_rel = error * 100.0 / avg_real
+        error_rel = error * 100.0 / abs(avg_real)
         errors_rel.append(error_rel)
 
         if os.getenv("DEBUG") == "true":
