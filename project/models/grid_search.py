@@ -105,7 +105,7 @@ def run_grid_search_all_fractions(application_name: str, algorithm_name: str, fr
     y_scaled = transform_y(y_train)
     grid_search_args = [
         (fraction, algorithm_name, application_name, copy.deepcopy(x_scaled), copy.deepcopy(y_scaled),
-         copy.deepcopy(list(y[DataFrameColumns.EXECUTION_TIME])))
+         copy.deepcopy(list(y_scaled[DataFrameColumns.EXECUTION_TIME])))
         for fraction in [round(1.0 - x / 10, 1) for x in range(frac)]
     ]
 
