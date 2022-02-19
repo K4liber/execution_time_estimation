@@ -57,7 +57,8 @@ if __name__ == '__main__':
                 avg_errors_per_app.append(sum(errors_rel)/len(errors_rel))
 
             avg_error_per_app = sum(avg_errors_per_app)/len(avg_errors_per_app)
-            logger.info(f'{application_name} errors = {avg_error_per_app}')
+            logger.info(f'"{application_name}" errors = {round(avg_error_per_app, 1)}')
             avg_errors_per_algorithm.append(avg_error_per_app)
 
-        logger.info(f'{model_name} average error = {sum(avg_errors_per_algorithm)/len(avg_errors_per_algorithm)}')
+        logger.info(f'{model_name} average error = '
+                    f'{round(sum(avg_errors_per_algorithm)/len(avg_errors_per_algorithm), 1)}')
