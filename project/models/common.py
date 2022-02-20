@@ -1,5 +1,5 @@
 import os
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import joblib
 import numpy as np
@@ -18,11 +18,13 @@ _algorithm_to_color = {
 }
 
 
-def get_model_details_for_algorithm(application_name: str, algorithm: str, fraction: float = 1.0) -> ModelDetails:
+def get_model_details_for_algorithm(application_name: str, algorithm: str, fraction: float = 1.0,
+                                    reduced: Optional[bool] = None) -> ModelDetails:
+    reduced = is_reduced() if reduced is None else reduced
     algorithm_to_model_details = {
-        'svr': ModelDetails(application_name, fraction, True, is_reduced()),
-        'knn': ModelDetails(application_name, fraction, True, is_reduced()),
-        'pol': ModelDetails(application_name, fraction, False, is_reduced())
+        'svr': ModelDetails(application_name, fraction, True, reduced),
+        'knn': ModelDetails(application_name, fraction, True, reduced),
+        'pol': ModelDetails(application_name, fraction, False, reduced)
     }
     return algorithm_to_model_details[algorithm]
 
