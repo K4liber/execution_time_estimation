@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 sys.path.append('.')
 
 from project.utils.app_ids import app_name_to_id, AppID
-from project.definitions import ROOT_DIR, is_reduced
-from project.models.common import plot_app_learning_curve
+from project.definitions import ROOT_DIR
+from project.models.common import plot_app_learning_curve, get_name_suffix
 
 
 def learning_curve_multi():
@@ -18,11 +18,17 @@ def learning_curve_multi():
         AppID.VideoSplitter: ax3,
         AppID.FaceRecogniser: ax4
     }
+    name_suffix = get_name_suffix()
 
-    for app_name, app_id in app_name_to_id.items():
-        plot_app_learning_curve(app_name, 'svr', app_id_to_axes[app_id])
-        plot_app_learning_curve(app_name, 'knn', app_id_to_axes[app_id])
-        plot_app_learning_curve(app_name, 'pol', app_id_to_axes[app_id])
+    for algorithm_name in {'knn', 'pol', 'svr'}:
+        for app_name, app_id in app_name_to_id.items():
+            results_filepath = os.path.join(ROOT_DIR, '..', 'execution_results',
+                                            f'{algorithm_name}_{app_name}_errors{name_suffix}.csv')
+
+            if os.path.isfile(results_filepath):
+                os.remove(results_filepath)
+
+            plot_app_learning_curve(app_name, algorithm_name, app_id_to_axes[app_id], results_filepath)
 
     for ax in fig.get_axes():
         ax.label_outer()
@@ -35,7 +41,7 @@ def learning_curve_multi():
     plt.xlabel('number of training samples')
     plt.ylabel('regression relative error [%]')
     plt.tight_layout()
-    file_name = 'learning_curve_multi' + ('_reduced' if is_reduced() else '') + '.png'
+    file_name = 'learning_curve_multi' + name_suffix + '.png'
     fig_path = os.path.join(ROOT_DIR, 'models', 'figures', file_name)
     plt.savefig(fig_path, bbox_inches='tight', pad_inches=0.05)
 

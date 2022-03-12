@@ -1,3 +1,4 @@
+import csv
 import os
 from typing import List, Tuple, Optional
 
@@ -47,7 +48,7 @@ def init_scale_from_train_set(model_details: ModelDetails, app_id: int):
     )
 
 
-def plot_app_learning_curve(application_name: str, algorithm_name: str, ax):
+def plot_app_learning_curve(application_name: str, algorithm_name: str, ax, results_filepath: Optional[str]):
     algorithm_dir = os.path.join(ROOT_DIR, 'models', algorithm_name)
 
     if not os.path.isdir(algorithm_dir):
@@ -86,6 +87,12 @@ def plot_app_learning_curve(application_name: str, algorithm_name: str, ax):
         y_predicted = inverse_transform_y(y_predicted_scaled)
         y_list = list(y_test[DataFrameColumns.EXECUTION_TIME])
         errors, errors_rel = get_errors(y_list, y_predicted)
+
+        if results_filepath:
+            with open(results_filepath, 'a') as results_file:
+                results_file.write("\n".join([str(value) for value in errors_rel]))
+                results_file.write("\n")
+
         logger.info('############### SUMMARY ##################')
         logger.info(model.get_params())
         logger.info(f'training data fraction: {fraction}')
@@ -131,3 +138,8 @@ def get_errors(y_real: List[float], y_predicted: List[float]) -> Tuple[List[floa
             logger.info('error relative [percentage] = %s' % error_rel)
 
     return errors, errors_rel
+
+
+def get_name_suffix(reduced: Optional[bool] = None):
+    _is_reduced = is_reduced() if reduced is None else reduced
+    return '_reduced' if _is_reduced else ''
