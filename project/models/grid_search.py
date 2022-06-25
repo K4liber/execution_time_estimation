@@ -3,8 +3,9 @@ import copy
 import multiprocessing
 import os
 import sys
+import time
 from os.path import join
-from typing import List, Dict, Type
+from typing import List, Dict, Type, Tuple
 
 import joblib
 import numpy as np
@@ -41,7 +42,10 @@ _name_to_algorithm: Dict[str, Type[Algorithm]] = {
 }
 
 
-def grid_search(algorithm, param_grid):
+def grid_search(
+        algorithm: str,
+        param_grid: dict
+):
     return GridSearchCV(algorithm, param_grid=param_grid)
 
 
@@ -52,7 +56,17 @@ def run_grid_search(
         x_scaled: pd.DataFrame,
         y_scaled: pd.DataFrame,
         y: List[float]
-):
+) -> Tuple[float, float, float]:
+    """
+
+    :param fraction:
+    :param algorithm_name:
+    :param application_name:
+    :param x_scaled:
+    :param y_scaled:
+    :param y:
+    :return: (fraction, training time [s], evaluation time [s])
+    """
     model_details = get_model_details_for_algorithm(application_name, algorithm_name)
 
     if algorithm_name not in _name_to_algorithm:
@@ -66,10 +80,13 @@ def run_grid_search(
     )
     x_train = x_scaled[:int(len(x_scaled) * fraction)]
     y_train = y_scaled[:int(len(y_scaled) * fraction)]
+    training_time_start = time.time()
     model.fit(x_train, np.ravel(y_train))
+    training_time = time.time() - training_time_start
+    evaluation_time_start = time.time()
     y_predicted_scaled = model.predict(x_scaled)
-    # ML end
     y_predicted = inverse_transform_y(y_predicted_scaled)
+    evaluation_time = time.time() - evaluation_time_start
     errors, errors_rel = get_errors(y, y_predicted)
     logger.info('############### SUMMARY ##################')
     logger.info(f'algorithm: {algorithm_name}, app: {application_name}. fraction: {fraction}')
@@ -85,8 +102,14 @@ def run_grid_search(
     with open(f'{model_path}', "w+b") as model_file:
         joblib.dump(model.best_estimator_, model_file, compress=1)
 
+    return fraction, round(training_time, 5), round(evaluation_time, 5)
 
-def run_grid_search_all_fractions(application_name: str, algorithm_name: str, frac: int):
+
+def run_grid_search_all_fractions(
+        application_name: str,
+        algorithm_name: str,
+        frac: int
+):
     model_details = get_model_details_for_algorithm(application_name, algorithm_name)
     app_id = app_name_to_id.get(application_name, None)
 
@@ -103,14 +126,22 @@ def run_grid_search_all_fractions(application_name: str, algorithm_name: str, fr
 
     x_scaled = transform_x(x_train)
     y_scaled = transform_y(y_train)
+    fractions = [round(1.0 - x / 10, 1) for x in range(frac)]
     grid_search_args = [
         (fraction, algorithm_name, application_name, copy.deepcopy(x_scaled), copy.deepcopy(y_scaled),
-         copy.deepcopy(list(y_scaled[DataFrameColumns.EXECUTION_TIME])))
-        for fraction in [round(1.0 - x / 10, 1) for x in range(frac)]
+         copy.deepcopy(list(y_scaled[DataFrameColumns.EXECUTION_TIME]))) for fraction in fractions
     ]
+    processes = min(len(fractions), 5)
 
-    with multiprocessing.Pool(processes=5) as pool:
-        pool.starmap(run_grid_search, grid_search_args)
+    with multiprocessing.Pool(processes=processes) as pool:
+        times_list = pool.starmap(run_grid_search, grid_search_args)
+        times_filename = 'times' + ('_reduced' if model_details.reduced else '') + '.csv'
+        times_filepath = join(ROOT_DIR, '..', 'execution_results', times_filename)
+
+        with open(times_filepath, 'a') as times_file:
+            for fraction, training_time, evaluation_time in times_list:
+                values = [algorithm_name, application_name, fraction, training_time, evaluation_time]
+                times_file.write(','.join([str(value) for value in values]) + '\n')
 
 
 if __name__ == "__main__":
