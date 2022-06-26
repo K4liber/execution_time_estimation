@@ -1,0 +1,13 @@
+algorithm_name,application_name,fraction,training_time,evaluation_time
+knn,face_recogniser,1.0,0.45662,0.0009
+knn,xgb_grid_search,1.0,0.43885,0.00127
+knn,images_merger,1.0,0.44339,0.00082
+knn,video_splitter,1.0,0.45299,0.00074
+pol,face_recogniser,1.0,0.54232,0.00124
+pol,xgb_grid_search,1.0,0.54313,0.00118
+pol,images_merger,1.0,0.54168,0.00123
+pol,video_splitter,1.0,0.54044,0.00134
+svr,face_recogniser,1.0,123.6536,0.00078
+svr,xgb_grid_search,1.0,109.39557,0.00068
+svr,images_merger,1.0,157.34792,0.00075
+svr,video_splitter,1.0,159.17456,0.00074
