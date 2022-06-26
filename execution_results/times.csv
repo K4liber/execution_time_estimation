@@ -3,11 +3,11 @@ knn,face_recogniser,1.0,0.48048,0.00084
 knn,xgb_grid_search,1.0,0.44425,0.00068
 knn,images_merger,1.0,0.45562,0.00061
 knn,video_splitter,1.0,0.46293,0.00107
-svr,face_recogniser,1.0,2750.09566,0.00077
-svr,xgb_grid_search,1.0,1110.07916,0.00065
-svr,images_merger,1.0,1978.40707,0.00067
-svr,video_splitter,1.0,1649.88119,0.00078
 pol,face_recogniser,1.0,0.90054,0.00269
 pol,xgb_grid_search,1.0,0.88412,0.00249
 pol,images_merger,1.0,0.89069,0.01087
 pol,video_splitter,1.0,1.02454,0.01099
+svr,face_recogniser,1.0,778.9517,0.00082
+svr,xgb_grid_search,1.0,353.81019,0.00083
+svr,images_merger,1.0,682.54124,0.00093
+svr,video_splitter,1.0,560.76904,0.0008

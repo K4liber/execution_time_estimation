@@ -1,5 +1,5 @@
 #!/bin/bash
-for ALGORITHM in "pol"
+for ALGORITHM in "svr"
 do
   for REDUCED in "true" ""
   do

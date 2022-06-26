@@ -1,6 +1,5 @@
 import argparse
 import copy
-import multiprocessing
 import os
 import sys
 import time
@@ -46,7 +45,7 @@ def grid_search(
         algorithm: str,
         param_grid: dict
 ):
-    return GridSearchCV(algorithm, param_grid=param_grid)
+    return GridSearchCV(algorithm, param_grid=param_grid, n_jobs=-1)
 
 
 def run_grid_search(
@@ -127,21 +126,23 @@ def run_grid_search_all_fractions(
     x_scaled = transform_x(x_train)
     y_scaled = transform_y(y_train)
     fractions = [round(1.0 - x / 10, 1) for x in range(frac)]
-    grid_search_args = [
+    y_list = list(y_scaled[DataFrameColumns.EXECUTION_TIME]) if algorithm_name == 'pol' else list(y_scaled)
+    grid_search_args_list = [
         (fraction, algorithm_name, application_name, copy.deepcopy(x_scaled), copy.deepcopy(y_scaled),
-         copy.deepcopy(list(y_scaled[DataFrameColumns.EXECUTION_TIME]))) for fraction in fractions
+         copy.deepcopy(y_list)) for fraction in fractions
     ]
-    processes = min(len(fractions), 5)
+    times_list = []
 
-    with multiprocessing.Pool(processes=processes) as pool:
-        times_list = pool.starmap(run_grid_search, grid_search_args)
-        times_filename = 'times' + ('_reduced' if model_details.reduced else '') + '.csv'
-        times_filepath = join(ROOT_DIR, '..', 'execution_results', times_filename)
+    for grid_search_args in grid_search_args_list:
+        times_list.append(run_grid_search(*grid_search_args))
 
-        with open(times_filepath, 'a') as times_file:
-            for fraction, training_time, evaluation_time in times_list:
-                values = [algorithm_name, application_name, fraction, training_time, evaluation_time]
-                times_file.write(','.join([str(value) for value in values]) + '\n')
+    times_filename = 'times' + ('_reduced' if model_details.reduced else '') + '.csv'
+    times_filepath = join(ROOT_DIR, '..', 'execution_results', times_filename)
+
+    with open(times_filepath, 'a') as times_file:
+        for fraction, training_time, evaluation_time in times_list:
+            values = [algorithm_name, application_name, fraction, training_time, evaluation_time]
+            times_file.write(','.join([str(value) for value in values]) + '\n')
 
 
 if __name__ == "__main__":
